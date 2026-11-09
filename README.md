@@ -30,6 +30,7 @@
   - [排错](#排错)
 - [AI 工具一键安装](#ai-工具一键安装)
 - [开发](#开发)
+  - [给 AI 工具的仓库说明](#给-ai-工具的仓库说明)
 - [目录结构](#目录结构)
 - [自定义配色](#自定义配色)
 - [友链](#友链)
@@ -300,6 +301,24 @@ rm -f /tmp/luci-indexcache* && /etc/init.d/uhttpd reload
 - [ ] 登录页为居中的卡片式布局，底部有版本号与版权信息
 - [ ] 左侧导航为可折叠分组，右上角配色按钮可切换明暗且刷新后保持
 - [ ] `系统 → 系统` 页面的分段标签页、开关、下拉框样式正常，功能可用
+
+### 给 AI 工具的仓库说明
+
+安装之外，如果你想让 AI 直接改这个主题（换配色、加组件、修某个 LuCI 页面），请让它先读 [`AGENTS.md`](AGENTS.md)。那份文件写的是「怎么在这个仓库里干活」：
+
+- 分层规则：`src/` 是唯一来源，`cascade.css` 是产物；令牌集中在 `10-tokens.css`
+- 硬约束：禁止页面级选择器、禁止写死尺寸、禁止模板内联样式，`npm run lint` 会直接失败
+- LuCI 的坑：模块允许顶层 `return`、菜单必须用 `ui.menu.getChildren()` 过滤、视图渲染在 `#view`
+- 验收标准：`npm run lint` + `npm run build` + 明暗两模式、1280/480 两种宽度实机确认
+
+一句话提示词：
+
+```text
+读 AGENTS.md，按其中的分层规则和「Definition of done」修改这个主题。
+不要改 src/vendor/00-structure.css，不要手改 cascade.css。
+改完跑 npm run lint 与 npm run build，再用 tools/deploy.sh 部署到 192.168.1.1，
+在浅色/深色、1280px/480px 下各截一次图确认没有回归。
+```
 
 ## 开发
 

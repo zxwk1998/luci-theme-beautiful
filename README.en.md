@@ -30,6 +30,7 @@
   - [Troubleshooting](#troubleshooting)
 - [One-prompt install with an AI agent](#one-prompt-install-with-an-ai-agent)
 - [Development](#development)
+  - [Repo guide for AI agents](#repo-guide-for-ai-agents)
 - [Layout](#layout)
 - [Customising](#customising)
 - [Friends](#friends)
@@ -304,14 +305,56 @@ Four checks confirm a successful install:
 ## Development
 
 ```sh
+npm run lint                  # layout contract check (see below)
 node tools/build.mjs          # src/*.css -> htdocs/luci-static/beautiful/cascade.css
 tools/package.sh              # dist/luci-theme-beautiful-<version>.tar.gz
 tools/deploy.sh <host> <pass> # build and push to a live router for preview
 ```
 
-`src/vendor/00-structure.css` is the untouched bootstrap stylesheet (Apache-2.0). It carries the functional rules that LuCI widgets depend on; everything visual lives in the numbered layers above it.
+`src/vendor/00-structure.css` is the untouched bootstrap stylesheet (Apache-2.0). It carries the
+functional rules that LuCI widgets depend on; everything visual lives in the numbered layers above it.
 
-The build stamps a content hash into `assetver` in `header.ut`, so browsers pick up a new stylesheet immediately after deployment.
+The build stamps a content hash into `assetver` in `header.ut`, so browsers pick up a new stylesheet
+immediately after deployment.
+
+### Layout system
+
+The base layout is defined once and shared by every page. Components never hard-code sizes, and
+pages never ship their own styles.
+
+- **`src/10-tokens.css`** owns every metric: `--space-*`, `--text-*`, `--control-h`, `--card-pad`,
+  `--cell-pad-*`, `--field-cols`. Responsive variants swap token values instead of rewriting a set
+  of breakpoint rules per component.
+- **Component layers** (`30` shell / `40` controls / `50` surfaces / `60` LuCI widgets) only consume
+  tokens. Card header bleed, table bleed and the floating action bar are all derived from
+  `--card-pad`, so one padding change moves the whole page.
+- **Form rows** are a two-column grid: label column plus field column, with descriptions spanning the
+  field column. LuCI renders `.cbi-value-description` as a *sibling* of `.cbi-value-field`, so the
+  columns must be stated explicitly instead of relying on auto-placement.
+- **`npm run lint`** fails on: `[data-page="…"]` page selectors, page-specific `#id`s, hard-coded
+  font sizes, or inline layout styles in templates.
+
+To adjust one page, change a token or a component — not the page.
+
+### Repo guide for AI agents
+
+Installing is only half of it. If you want an agent to actually change this theme — re-colour it, add
+a component, fix a LuCI page — point it at [`AGENTS.md`](AGENTS.md) first. It documents how to work
+in this repo:
+
+- Layering: `src/` is the only source, `cascade.css` is a build artefact, tokens live in `10-tokens.css`
+- Hard rules: no page-level selectors, no hard-coded sizes, no inline layout styles — `npm run lint` fails on them
+- LuCI traps: modules may end with a top-level `return`, menus must go through `ui.menu.getChildren()`, views own `#view`
+- Definition of done: `npm run lint` + `npm run build` + a real check in light/dark at 1280 px and 480 px
+
+One-line prompt:
+
+```text
+Read AGENTS.md, then change this theme following its layering rules and "Definition of done".
+Do not touch src/vendor/00-structure.css and never hand-edit cascade.css.
+When done run npm run lint and npm run build, deploy with tools/deploy.sh, and take one screenshot
+each in light/dark at 1280px/480px to confirm there is no regression.
+```
 
 ## Layout
 
