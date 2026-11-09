@@ -223,7 +223,8 @@ return baseclass.extend({
 				groupLi.appendChild(E('ul', { 'class': 'nav-items' }, [
 					E('li', {}, E('a', {
 						'class': 'nav-link' + ((group === activeGroup) ? ' active' : ''),
-						'href': L.url(group.name)
+						/* the mode segment is mandatory: /cgi-bin/luci/<group> is not a node */
+						'href': L.url(modeName, group.name)
 					}, [ navIcon(group.name), E('span', { 'class': 'nav-text' }, [ _(group.title) ]) ]))
 				]));
 				ul.appendChild(groupLi);
@@ -302,9 +303,8 @@ return baseclass.extend({
 			crumbs.push(E('li', {}, E('a', { 'href': L.url(path.mode.name) }, [ _(path.mode.title) ])));
 
 		if (path.group) {
-			const groupUrl = path.item
-				? L.url(path.mode.name, path.group.name, path.item.name)
-				: L.url(path.mode.name, path.group.name);
+			/* the ancestor crumb leads to the group root, not to the page we are on */
+			const groupUrl = L.url(path.mode.name, path.group.name);
 
 			crumbs.push(E('li', {}, E('a', { 'href': groupUrl }, [ _(path.group.title) ])));
 		}
