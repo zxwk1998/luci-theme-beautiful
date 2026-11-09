@@ -435,6 +435,41 @@ footer ul.breadcrumb {
 }
 
 /* ==================================================================
+ * Page title row — views that print their own heading beside an action
+ *
+ * Some shipped views (status/channel_analysis is one) hand the theme a
+ * `.cbi-title-section` holding `.cbi-title-field` (an <h2>) and
+ * `.cbi-title-buttons`. The classes are not declared by the structure
+ * layer, so the row collapsed to two stacked blocks: the heading copied
+ * the one already in the top bar and the action dropped underneath it,
+ * flush left.
+ *
+ * The heading therefore goes away — this theme keeps exactly one page
+ * title, in the top bar — and the row is left as a right-aligned action
+ * line. `wrap` keeps the buttons reachable once a narrow viewport or a
+ * second action forces the line to break.
+ * ================================================================ */
+.cbi-title-section {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--space-3);
+	margin: 0 0 var(--space-4);
+}
+
+.cbi-title-section > .cbi-title-field {
+	display: none;
+}
+
+.cbi-title-buttons {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--space-3);
+	margin-left: auto;
+}
+
+/* ==================================================================
  * Content images
  *
  * Only content images are fluid; widget icons keep the fixed metrics

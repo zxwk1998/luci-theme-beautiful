@@ -13,7 +13,7 @@
 	const pagetitle = striptags(_(dispatched?.title ?? ''));
 
 	/* bump on every release so browsers pick up the new stylesheet */
-	const assetver = '66f062cf';
+	const assetver = '42aeba0b';
 
 	http.prepare_content('text/html; charset=UTF-8');
 -%}
@@ -72,39 +72,6 @@
 		{% endif %}
 		<script src="{{ dispatcher.build_url('admin/translations', dispatcher.lang) }}"></script>
 		<script src="{{ resource }}/cbi.js?v={{ version.luciversion }}"></script>
-		<script>
-			/* TEMP diagnostics: append ?__diag=1 to dump the boot state into the title */
-			(function() {
-				if (location.search.indexOf('__diag') < 0)
-					return;
-
-				var errs = [];
-
-				window.addEventListener('error', function(e) {
-					errs.push('E:' + (e.message || '') + '@' + String(e.filename || '').split('/').pop() + ':' + e.lineno);
-				});
-				window.addEventListener('unhandledrejection', function(e) {
-					var r = e.reason;
-					errs.push('R:' + (r && (r.message || String(r))));
-				});
-
-				setTimeout(function() {
-					var v = document.getElementById('view');
-					var m = document.getElementById('topmenu');
-					var parts = [
-						'L=' + (typeof L),
-						'luci=' + (typeof LuCI),
-						'fmt=' + (typeof String.prototype.format),
-						'rs=' + document.readyState,
-						'view=' + (v ? (v.querySelector('.spinning') ? 'spinning' : 'kids' + v.children.length) : 'none'),
-						'menu=' + (m ? m.children.length : 'none'),
-						'scripts=' + document.scripts.length,
-						'errs=' + (errs.slice(-2).join(';') || 'none')
-					];
-					document.title = 'DIAG ' + parts.join(' ');
-				}, 3500);
-			})();
-		</script>
 	</head>
 
 	<body class="lang_{{ dispatcher.lang }} {{ entityencode(striptags(dispatched?.title ?? ''), true) }}" data-page="{{ entityencode(join('-', ctx.request_path), true) }}">

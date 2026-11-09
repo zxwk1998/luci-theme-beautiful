@@ -429,26 +429,14 @@
 	background: color-mix(in oklab, var(--muted) 60%, var(--card));
 }
 
-/* bleed tables to the card edges — derived from the card's own padding */
-.cbi-section > .cbi-section-node > .table,
-.cbi-section > .table,
-.cbi-section-node > .cbi-tblsection > .table {
-	width: calc(100% + (var(--pad) * 2));
-	margin: 0 calc(var(--pad) * -1);
-}
-
-.cbi-section > .cbi-section-node > .table .th:first-child,
-.cbi-section > .cbi-section-node > .table .td:first-child,
-.cbi-section > .table .th:first-child,
-.cbi-section > .table .td:first-child {
-	padding-left: var(--pad);
-}
-
-.cbi-section > .cbi-section-node > .table .th:last-child,
-.cbi-section > .cbi-section-node > .table .td:last-child,
-.cbi-section > .table .th:last-child,
-.cbi-section > .table .td:last-child {
-	padding-right: var(--pad);
+/* Tables sit on the card's content grid. The negative inline margin is
+ * exactly the cell padding, so the first cell's text lines up with the
+ * section title while the row surface still reaches a little further
+ * out — and nothing is drawn underneath the card padding, which keeps a
+ * scrolling table from losing content at either edge. */
+.cbi-section .table {
+	width: calc(100% + (var(--cell-pad-x) * 2));
+	margin-inline: calc(var(--cell-pad-x) * -1);
 }
 
 /* row actions never collapse — the cell keeps at least its content width */
@@ -541,34 +529,11 @@
  * Phones — a wide table scrolls instead of compressing
  *
  * Read-only tables keep their words intact (CJK must not break inside a
- * term) and size to their content inside a scroll container. Tables with
- * form controls are excluded: they must stay fluid so an open dropdown
- * is not clipped by the scroll container.
+ * term) and size to their content inside the scroll container declared
+ * above. Tables with form controls are excluded: they must stay fluid so
+ * an open dropdown is not clipped by the scroll container.
  * ---------------------------------------------------------------- */
 @media screen and (max-width: 767px) {
-	/* align tables with the card padding: a bleeding table cannot scroll
-	   cleanly inside the card */
-	.cbi-section > .cbi-section-node > .table,
-	.cbi-section > .table,
-	.cbi-section-node > .cbi-tblsection > .table {
-		width: 100%;
-		margin-inline: 0;
-	}
-
-	.cbi-section > .cbi-section-node > .table .th:first-child,
-	.cbi-section > .cbi-section-node > .table .td:first-child,
-	.cbi-section > .table .th:first-child,
-	.cbi-section > .table .td:first-child {
-		padding-left: var(--cell-pad-x);
-	}
-
-	.cbi-section > .cbi-section-node > .table .th:last-child,
-	.cbi-section > .cbi-section-node > .table .td:last-child,
-	.cbi-section > .table .th:last-child,
-	.cbi-section > .table .td:last-child {
-		padding-right: var(--cell-pad-x);
-	}
-
 	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) > .table {
 		width: max-content;
 		min-width: 100%;

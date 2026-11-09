@@ -29,55 +29,6 @@
 			</div>
 		</div>
 		<script>L.require('menu-beautiful')</script>
-		<script>
-			/* TEMP diagnostics v2: ?__diag=1 reports why a view may stay pending */
-			(function() {
-				if (location.search.indexOf('__diag') < 0)
-					return;
-
-				var log = [];
-
-				try {
-					var orig = L.error;
-
-					L.error = function() {
-						log.push('L.err:' + Array.prototype.slice.call(arguments).map(String).join('|').slice(0, 70));
-						return orig.apply(this, arguments);
-					};
-				}
-				catch (e) {}
-
-				window.addEventListener('unhandledrejection', function(e) {
-					log.push('R:' + (e.reason && (e.reason.message || String(e.reason))).slice(0, 50));
-				});
-
-				setTimeout(function() {
-					var t0 = Date.now();
-					var mod;
-
-					try {
-						mod = L.require('view.system.reboot');
-
-						mod.then(function(v) {
-							log.push('mod=ok+' + (Date.now() - t0) + 'ms/' + (typeof v.render));
-						}, function(e) {
-							log.push('mod=FAIL:' + ((e && e.message) || String(e)).slice(0, 40));
-						});
-					}
-					catch (e) {
-						log.push('modThrow:' + e.message.slice(0, 40));
-					}
-
-					setTimeout(function() {
-						var v = document.getElementById('view');
-						document.title = 'D3 loaded=' + L.loaded
-							+ ' kids=' + (v ? v.children.length : 'none')
-							+ ' spin=' + (v && v.querySelector('.spinning') ? 'y' : 'n')
-							+ ' log=' + (log.join(';') || 'none');
-					}, 3000);
-				}, 1200);
-			})();
-		</script>
 		{% endif %}
 	</body>
 </html>
