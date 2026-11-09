@@ -203,9 +203,11 @@
 }
 
 .network-status-table .ifacebox-body .ifacebadge {
+	/* chips hug their label instead of stretching to fill the row */
 	min-width: 0;
-	flex: 1 1 auto;
+	flex: 0 1 auto;
 	width: auto;
+	max-width: 100%;
 }
 
 .network-status-table .ifacebox-body > div {

@@ -3988,6 +3988,29 @@ input[type="submit"][disabled] {
 	color: var(--primary-foreground);
 }
 
+/*
+ * "Apply + Save" pairs: the vendor layer paints the save button green as soon
+ * as it follows an apply button, which ends up as an empty pill on top of our
+ * palette. Keep one primary action per row instead — apply stays solid, save
+ * becomes a quiet outline so the two read as a hierarchy.
+ */
+.cbi-page-actions .cbi-button-apply + .cbi-button-save,
+.cbi-page-actions .cbi-button-negative + .cbi-button-save,
+.cbi-page-actions .cbi-dropdown + .cbi-button-save {
+	background: transparent;
+	border-color: var(--border);
+	color: var(--foreground);
+	box-shadow: none;
+}
+
+.cbi-page-actions .cbi-button-apply + .cbi-button-save:hover,
+.cbi-page-actions .cbi-button-negative + .cbi-button-save:hover,
+.cbi-page-actions .cbi-dropdown + .cbi-button-save:hover {
+	background: var(--accent);
+	border-color: var(--border);
+	color: var(--accent-foreground);
+}
+
 /* --- destructive -------------------------------------------------- */
 .cbi-button-negative,
 .cbi-button-remove,
@@ -4582,12 +4605,15 @@ input[type="radio"].cbi-input-invalid {
  * ================================================================ */
 .cbi-section {
 	--pad: var(--card-pad);
+	/* how far a table may reach past the content edge: exactly its own
+	   cell padding, so no text is ever clipped by a scroll container */
+	--table-inset: var(--cell-pad-x);
 
 	position: relative;
 	background: var(--card);
 	border: 1px solid var(--border);
 	border-radius: var(--card-radius);
-	box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.04);
+	box-shadow: var(--shadow-xs);
 	padding: var(--pad);
 	margin: 0;
 }
@@ -4962,9 +4988,11 @@ input[type="radio"].cbi-input-invalid {
  * section title while the row surface still reaches a little further
  * out — and nothing is drawn underneath the card padding, which keeps a
  * scrolling table from losing content at either edge. */
-.cbi-section .table {
-	width: calc(100% + (var(--cell-pad-x) * 2));
-	margin-inline: calc(var(--cell-pad-x) * -1);
+.cbi-section > .cbi-section-node > .table,
+.cbi-section > .table,
+.cbi-section-node > .cbi-tblsection > .table {
+	width: calc(100% + (var(--table-inset) * 2));
+	margin-inline: calc(var(--table-inset) * -1);
 }
 
 /* row actions never collapse — the cell keeps at least its content width */
@@ -5128,7 +5156,7 @@ input[type="radio"].cbi-input-invalid {
 .cbi-tabmenu > li.cbi-tab {
 	background: var(--background);
 	color: var(--foreground);
-	box-shadow: 0 1px 2px oklch(0 0 0 / 0.06), 0 0 0 1px color-mix(in oklab, var(--border) 80%, transparent);
+	box-shadow: var(--shadow-2xs), 0 0 0 1px color-mix(in oklab, var(--border) 80%, transparent);
 }
 
 .tabs > li:not(.active):hover,
@@ -5464,6 +5492,7 @@ a.label:hover {
 	box-shadow: none;
 	padding: 0;
 	background: transparent;
+	--table-inset: 0;
 }
 
 .modal .cbi-section > h3 {
@@ -5996,9 +6025,11 @@ a.label:hover {
 }
 
 .network-status-table .ifacebox-body .ifacebadge {
+	/* chips hug their label instead of stretching to fill the row */
 	min-width: 0;
-	flex: 1 1 auto;
+	flex: 0 1 auto;
 	width: auto;
+	max-width: 100%;
 }
 
 .network-status-table .ifacebox-body > div {
@@ -6323,7 +6354,7 @@ footer ul.breadcrumb {
 	background: var(--card);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-xl);
-	box-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 24px 48px -24px oklch(0 0 0 / 0.18);
+	box-shadow: var(--shadow-lg);
 	padding: 1.875rem;
 }
 
@@ -6426,10 +6457,18 @@ footer ul.breadcrumb {
 }
 
 .auth-meta {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-1);
 	font-size: var(--text-2xs);
 	color: var(--muted-foreground);
 	text-align: center;
 	line-height: var(--leading-relaxed);
+}
+
+.auth-copy {
+	opacity: 0.85;
 }
 
 .auth-meta a {
