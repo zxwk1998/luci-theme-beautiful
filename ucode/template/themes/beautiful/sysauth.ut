@@ -3,6 +3,11 @@
  Derived from luci-theme-bootstrap, licensed under the Apache License 2.0.
 -#}
 
+{%
+	/* one ubus round trip for the whole page instead of one per reference */
+	const boardinfo = ubus.call('system', 'board') ?? {};
+-%}
+
 {% include('header', { blank_page: true }) %}
 
 <div class="auth-shell">
@@ -16,14 +21,13 @@
 				</svg>
 			</span>
 			<span class="auth-brand-text">
-				<span class="auth-brand-name">{{ ubus.call('system', 'board')?.hostname ?? 'OpenWrt' }}</span>
-				<span class="auth-brand-host">{{ ubus.call('system', 'board')?.model ?? (version.distname ?? 'LuCI') }}</span>
+				<span class="auth-brand-name">{{ boardinfo.hostname ?? 'OpenWrt' }}</span>
+				<span class="auth-brand-host">{{ boardinfo.model ?? (version.distname ?? 'LuCI') }}</span>
 			</span>
 		</div>
 
 		<div class="auth-head">
 			<h1>{{ _('Authorization Required') }}</h1>
-			<p>{{ ubus.call('system', 'board')?.model ?? version.distname }}</p>
 		</div>
 
 		{% if (auth_message): %}

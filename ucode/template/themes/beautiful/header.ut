@@ -13,7 +13,7 @@
 	const pagetitle = striptags(_(dispatched?.title ?? ''));
 
 	/* bump on every release so browsers pick up the new stylesheet */
-	const assetver = '42aeba0b';
+	const assetver = '7d959bc9';
 
 	http.prepare_content('text/html; charset=UTF-8');
 -%}
@@ -64,8 +64,8 @@
 		<link rel="stylesheet" media="only screen and (max-device-width: 854px)" href="{{ media }}/mobile.css?v={{ assetver }}">
 		<link rel="icon" href="{{ media }}/logo.svg" sizes="any" type="image/svg+xml">
 		<link rel="apple-touch-icon" href="{{ media }}/logo.svg">
-		{% if (node?.css): %}
-		<link rel="stylesheet" href="{{ resource }}/{{ node.css }}">
+		{% if (dispatched?.css): %}
+		<link rel="stylesheet" href="{{ resource }}/{{ dispatched.css }}">
 		{% endif %}
 		{% if (css): %}
 		<style title="text/css">{{ css }}</style>
@@ -74,7 +74,7 @@
 		<script src="{{ resource }}/cbi.js?v={{ version.luciversion }}"></script>
 	</head>
 
-	<body class="lang_{{ dispatcher.lang }} {{ entityencode(striptags(dispatched?.title ?? ''), true) }}" data-page="{{ entityencode(join('-', ctx.request_path), true) }}">
+	<body class="lang_{{ dispatcher.lang }}" data-page="{{ entityencode(join('-', length(ctx.request_path) ? ctx.request_path : ctx.path), true) }}">
 		{% if (!blank_page): %}
 		<div class="app">
 			<aside class="app-sidebar" id="app-sidebar" aria-label="{{ _('Main navigation') }}">
