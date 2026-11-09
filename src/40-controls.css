@@ -1,0 +1,588 @@
+/*!
+ * luci-theme-beautiful — form controls
+ * shadcn/ui Button / Input / Checkbox / Select primitives mapped onto
+ * the LuCI class vocabulary (.btn, .cbi-button, .cbi-select, ...).
+ */
+
+/* ==================================================================
+ * Buttons — default = outline, primary = solid, destructive = red
+ * ================================================================ */
+.btn,
+.cbi-button,
+button.btn,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+	appearance: none;
+	-webkit-appearance: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.375rem;
+	height: 2.25rem;
+	padding: 0 0.875rem;
+	margin: 0;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: var(--background);
+	color: var(--foreground);
+	font-family: var(--font-sans);
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1;
+	white-space: nowrap;
+	cursor: pointer;
+	text-decoration: none;
+	box-shadow: var(--shadow-2xs);
+	transition: background-color 120ms ease, border-color 120ms ease,
+	            color 120ms ease, box-shadow 120ms ease, transform 60ms ease;
+}
+
+.btn:hover,
+.cbi-button:hover,
+button.btn:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover {
+	background: var(--accent);
+	border-color: var(--border);
+	color: var(--accent-foreground);
+	text-decoration: none;
+	box-shadow: var(--shadow-2xs);
+}
+
+.btn:active,
+.cbi-button:active {
+	transform: translateY(0.5px);
+}
+
+.btn:focus-visible,
+.cbi-button:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 2px;
+	border-color: var(--border) !important;
+	box-shadow: var(--shadow-2xs);
+}
+
+.btn[disabled],
+.cbi-button[disabled],
+button[disabled],
+input[type="button"][disabled],
+input[type="submit"][disabled] {
+	opacity: var(--disabled-opacity);
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+/* --- primary ------------------------------------------------------ */
+.btn.important,
+.btn.cbi-button-action.important,
+.cbi-button-positive,
+.cbi-button-save,
+.cbi-button-apply,
+.cbi-button-action.important,
+.cbi-button.cbi-button-positive {
+	background: var(--primary);
+	border-color: var(--primary);
+	color: var(--primary-foreground);
+	box-shadow: var(--shadow-2xs);
+}
+
+.btn.important:hover,
+.cbi-button-positive:hover,
+.cbi-button-save:hover,
+.cbi-button-apply:hover,
+.cbi-button-action.important:hover {
+	background: color-mix(in oklab, var(--primary) 88%, var(--background));
+	border-color: color-mix(in oklab, var(--primary) 88%, var(--background));
+	color: var(--primary-foreground);
+}
+
+/* --- destructive -------------------------------------------------- */
+.cbi-button-negative,
+.cbi-button-remove,
+.btn.danger {
+	background: var(--background);
+	border-color: color-mix(in oklab, var(--destructive) 35%, var(--border));
+	color: var(--destructive);
+}
+
+.cbi-button-negative:hover,
+.cbi-button-remove:hover {
+	background: color-mix(in oklab, var(--destructive) 8%, var(--background));
+	border-color: color-mix(in oklab, var(--destructive) 55%, var(--border));
+	color: var(--destructive);
+}
+
+.cbi-button-negative.important {
+	background: var(--destructive);
+	border-color: var(--destructive);
+	color: var(--destructive-foreground);
+}
+
+.cbi-button-negative.important:hover {
+	background: color-mix(in oklab, var(--destructive) 88%, #000);
+	border-color: color-mix(in oklab, var(--destructive) 88%, #000);
+	color: var(--destructive-foreground);
+}
+
+/* --- quiet / ghost ------------------------------------------------ */
+.cbi-button-neutral,
+.cbi-button-reset,
+.cbi-button-edit,
+.cbi-button-down,
+.cbi-button-add,
+.cbi-button-action,
+.btn.secondary {
+	background: transparent;
+	border-color: var(--border);
+	color: var(--foreground);
+	box-shadow: none;
+}
+
+.cbi-button-neutral:hover,
+.cbi-button-reset:hover,
+.cbi-button-edit:hover,
+.cbi-button-down:hover,
+.cbi-button-add:hover,
+.cbi-button-action:hover {
+	background: var(--accent);
+	color: var(--accent-foreground);
+}
+
+/* empty submit/button inputs (form plumbing) must not render as buttons */
+input[type="submit"][value=""],
+input[type="button"][value=""],
+input[type="reset"][value=""] {
+	display: none;
+}
+
+/* --- sizing ------------------------------------------------------- */
+.btn.large {
+	height: 2.5rem;
+	padding: 0 1.125rem;
+	font-size: 0.875rem;
+}
+
+.btn.small,
+.cbi-button.small {
+	height: 1.875rem;
+	padding: 0 0.625rem;
+	font-size: 0.75rem;
+}
+
+/* compact buttons inside tables and inline sections */
+.td .cbi-button,
+.th .cbi-button,
+.cbi-section-actions .cbi-button,
+.cbi-dynlist .cbi-button {
+	height: 1.875rem;
+	padding: 0 0.625rem;
+	font-size: 0.75rem;
+	box-shadow: none;
+}
+
+/* square icon-only buttons (table row actions) */
+.td .cbi-button[title]:empty,
+.td .cbi-button.cbi-button-edit:empty {
+	width: 1.875rem;
+	padding: 0;
+}
+
+.btn .close,
+.alert-message .close {
+	background: none;
+	border: 0;
+	color: inherit;
+	font-size: 1rem;
+	line-height: 1;
+	padding: 0 0.25rem;
+	opacity: 0.6;
+}
+
+/* ==================================================================
+ * Text inputs, textareas, native selects
+ * ================================================================ */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="tel"],
+input[type="search"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input:not([type]),
+textarea,
+select,
+.cbi-select,
+.cbi-dropdown:not(.btn):not(.cbi-button) {
+	display: inline-block;
+	width: 13.125rem;
+	max-width: 100%;
+	height: 2.25rem;
+	padding: 0 0.6875rem;
+	background: var(--background);
+	color: var(--foreground);
+	font-family: var(--font-sans);
+	font-size: 0.8125rem;
+	line-height: 2.25rem;
+	border: 1px solid var(--input);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-2xs);
+	transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
+	vertical-align: middle;
+}
+
+textarea {
+	height: auto;
+	min-height: 5.5rem;
+	padding: 0.5rem 0.6875rem;
+	line-height: 1.55;
+	resize: vertical;
+}
+
+input:hover:not([disabled]),
+textarea:hover:not([disabled]),
+select:hover:not([disabled]),
+.cbi-dropdown:hover:not(.btn):not(.cbi-button) {
+	border-color: color-mix(in oklab, var(--input) 70%, var(--foreground));
+}
+
+input::placeholder,
+textarea::placeholder {
+	color: var(--muted-foreground);
+}
+
+input[readonly],
+textarea[readonly] {
+	background: var(--muted);
+	color: var(--muted-foreground);
+	box-shadow: none;
+}
+
+input[disabled],
+textarea[disabled],
+select[disabled],
+.cbi-dropdown[disabled] {
+	opacity: var(--disabled-opacity);
+	cursor: not-allowed;
+	background: var(--muted);
+}
+
+/* widen inputs inside card forms */
+.cbi-value-field > input:not([type="checkbox"]):not([type="radio"]),
+.cbi-value-field > textarea,
+.cbi-value-field > select,
+.cbi-value-field > .cbi-select,
+.cbi-value-field > .cbi-dropdown:not(.btn):not(.cbi-button) {
+	width: 100%;
+	max-width: 26rem;
+}
+
+.cbi-value-field > textarea {
+	max-width: 40rem;
+}
+
+@media screen and (min-width: 768px) {
+	#localtime {
+		width: 18.75rem;
+	}
+}
+
+input[type="file"] {
+	width: auto !important;
+	height: auto;
+	padding: 0.375rem 0.5rem;
+	font-size: 0.8125rem;
+	background: var(--muted);
+	border-style: dashed;
+	line-height: 1.4;
+}
+
+input[type="file"]::file-selector-button {
+	margin-right: 0.625rem;
+	padding: 0.25rem 0.625rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--background);
+	color: var(--foreground);
+	font-family: inherit;
+	font-size: 0.75rem;
+	font-weight: 500;
+	cursor: pointer;
+}
+
+input[type="file"]::file-selector-button:hover {
+	background: var(--accent);
+}
+
+select[multiple] {
+	height: auto;
+	min-height: 6rem;
+	padding: 0.375rem;
+	background: var(--background);
+}
+
+select[multiple] option {
+	padding: 0.25rem 0.5rem;
+	border-radius: var(--radius-xs);
+}
+
+/* ==================================================================
+ * Checkbox / radio
+ * ================================================================ */
+input[type="checkbox"],
+input[type="radio"] {
+	--bd-color: var(--input);
+	--fg-color: var(--primary-foreground);
+	appearance: none;
+	-webkit-appearance: none;
+	position: relative;
+	width: 1rem;
+	height: 1rem;
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+	vertical-align: -0.1875rem;
+	cursor: pointer;
+	background: var(--background);
+	border: 1px solid var(--input);
+	border-radius: 0.25rem;
+	box-shadow: var(--shadow-2xs);
+	transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+input[type="radio"] {
+	border-radius: 50%;
+}
+
+input[type="checkbox"]:hover,
+input[type="radio"]:hover {
+	border-color: color-mix(in oklab, var(--ring) 80%, var(--input));
+}
+
+input[type="checkbox"]::before,
+input[type="checkbox"]::after,
+input[type="radio"]::before,
+input[type="radio"]::after {
+	content: none;
+}
+
+input[type="checkbox"]:checked {
+	background: var(--primary);
+	border-color: var(--primary);
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23fff' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5 6.5 11.5 12.5 5'/%3E%3C/svg%3E");
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+}
+
+:root[data-darkmode="true"] input[type="checkbox"]:checked {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5 6.5 11.5 12.5 5'/%3E%3C/svg%3E");
+}
+
+input[type="radio"]:checked {
+	background: var(--primary);
+	border-color: var(--primary);
+	box-shadow: inset 0 0 0 3.5px var(--background);
+}
+
+input[type="checkbox"]:focus-visible,
+input[type="radio"]:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 2px;
+}
+
+input[type="checkbox"].cbi-input-invalid,
+input[type="radio"].cbi-input-invalid {
+	border-color: var(--destructive);
+}
+
+/* ==================================================================
+ * Native select wrapper (.cbi-select) — shadcn Select trigger
+ * ================================================================ */
+.cbi-select {
+	position: relative;
+	padding: 0;
+	background: var(--background);
+	overflow: hidden;
+	vertical-align: middle;
+}
+
+.cbi-select select,
+.cbi-select select:focus {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0 2rem 0 0.6875rem;
+	border: 0;
+	outline: none;
+	background: transparent;
+	color: inherit;
+	font-family: inherit;
+	font-size: 0.8125rem;
+	line-height: 2.25rem;
+	cursor: pointer;
+	box-shadow: none;
+}
+
+.cbi-select::before {
+	content: "";
+	position: absolute;
+	top: 50%;
+	right: 0.5rem;
+	width: 1rem;
+	height: 1rem;
+	margin-top: -0.5rem;
+	background: var(--muted-foreground);
+	-webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/1rem no-repeat;
+	mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/1rem no-repeat;
+	pointer-events: none;
+	border-radius: 0;
+	display: block;
+}
+
+.cbi-select.cbi-input-invalid {
+	border-color: var(--destructive);
+}
+
+.cbi-select select option {
+	background: var(--popover);
+	color: var(--popover-foreground);
+}
+
+/* ==================================================================
+ * Dynamic list (.cbi-dynlist)
+ * ================================================================ */
+.cbi-dynlist {
+	display: inline-flex;
+	flex-direction: column;
+	gap: 0.375rem;
+	width: 100%;
+	max-width: 26rem;
+	min-width: 13.125rem;
+	height: auto;
+	min-height: 2.25rem;
+	padding: 0;
+	border: 0;
+	background: none;
+	box-shadow: none;
+}
+
+.cbi-dynlist > .item {
+	position: relative;
+	display: flex;
+	align-items: center;
+	min-height: 2.125rem;
+	padding: 0.375rem 2.25rem 0.375rem 0.625rem;
+	background: var(--muted);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	color: var(--foreground);
+	font-size: 0.8125rem;
+	box-shadow: none;
+	cursor: move;
+	word-break: break-all;
+}
+
+.cbi-dynlist > .item::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: 2rem;
+	border: 0;
+	border-left: 1px solid var(--border);
+	border-radius: 0;
+	background: var(--muted-foreground);
+	-webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/0.875rem no-repeat;
+	mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round'%3E%3Cpath d='M18 6 6 18M6 6l12 12'/%3E%3C/svg%3E") center/0.875rem no-repeat;
+	opacity: 0.55;
+	font-weight: normal;
+	color: inherit;
+	pointer-events: auto;
+}
+
+.cbi-dynlist > .item:hover::after {
+	opacity: 1;
+}
+
+.cbi-dynlist > .item.drag-over {
+	border-top: 2px solid var(--ring);
+}
+
+.cbi-dynlist > .item.dragging {
+	opacity: 0.5;
+}
+
+.cbi-dynlist > .add-item {
+	display: flex;
+	gap: 0.375rem;
+}
+
+.cbi-dynlist > .add-item > input,
+.cbi-dynlist > .add-item > button {
+	flex: 1 1 auto;
+}
+
+.cbi-dynlist > .add-item > .cbi-button-add {
+	flex: 0 0 auto;
+}
+
+/* ==================================================================
+ * Page actions — sticky card footer
+ * ================================================================ */
+.actions,
+.cbi-page-actions {
+	position: sticky;
+	bottom: 0;
+	z-index: 20;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin: 0 -1.25rem -1.25rem;
+	padding: 0.875rem 1.25rem;
+	background: color-mix(in oklab, var(--card) 88%, transparent);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+	border-top: 1px solid var(--border);
+	border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+	text-align: right;
+}
+
+.cbi-page-actions::after {
+	content: none;
+}
+
+.cbi-page-actions > * {
+	float: none;
+	margin: 0;
+}
+
+.cbi-page-actions > form {
+	display: inline-flex;
+	margin: 0;
+}
+
+.cbi-page-actions .secondary-action {
+	float: none;
+	margin-right: auto;
+	order: -1;
+}
+
+.cbi-page-actions .secondary-action a {
+	font-size: 0.8125rem;
+	line-height: 2.25rem;
+	color: var(--muted-foreground);
+	text-decoration: none;
+}
+
+.cbi-page-actions .secondary-action a:hover {
+	color: var(--foreground);
+}

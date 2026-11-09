@@ -1,0 +1,1063 @@
+/*!
+ * luci-theme-beautiful — surfaces
+ * Cards, form rows, tables, tabs, alerts, badges, modal, dropdown,
+ * tooltip and progress primitives.
+ */
+
+/* ==================================================================
+ * Page header
+ * ================================================================ */
+.cbi-map {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+/* the page title lives in the top bar, hide the duplicate in the content */
+.cbi-map > h2,
+.cbi-map > h2[name="content"],
+#view > h2[name="content"],
+.app-main-inner > h2[name="content"],
+.app-main-inner > h2:first-child {
+	display: none;
+}
+
+.cbi-map > h2 + .cbi-map-descr {
+	margin-top: -0.25rem;
+}
+
+.cbi-map-descr {
+	font-size: 0.8125rem;
+	line-height: 1.55;
+	color: var(--muted-foreground);
+	margin: 0;
+	max-width: 60rem;
+}
+
+/* ==================================================================
+ * Cards — every .cbi-section becomes a shadcn Card
+ * ================================================================ */
+.cbi-section {
+	position: relative;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-xs);
+	padding: 1.25rem;
+	margin: 0;
+}
+
+.cbi-section > h3 {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: -1.25rem -1.25rem 1rem;
+	padding: 0.875rem 1.25rem;
+	border-bottom: 1px solid var(--border);
+	font-size: 0.875rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.4;
+	border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+	background: transparent;
+}
+
+.cbi-section > h3 small {
+	font-weight: 400;
+	font-size: 0.75rem;
+	color: var(--muted-foreground);
+}
+
+.cbi-section > h3 + .cbi-section-descr {
+	margin-top: -0.5rem;
+}
+
+.cbi-section-descr {
+	font-size: 0.8125rem;
+	line-height: 1.55;
+	color: var(--muted-foreground);
+	margin: 0 0 1rem;
+}
+
+.cbi-section-descr a {
+	color: var(--foreground);
+}
+
+.cbi-section-node {
+	display: block;
+}
+
+/* nested sections keep a lighter surface */
+.cbi-section .cbi-section {
+	background: color-mix(in oklab, var(--muted) 45%, var(--card));
+	box-shadow: none;
+	padding: 1rem;
+}
+
+.cbi-section .cbi-section > h3 {
+	margin: -1rem -1rem 0.875rem;
+	padding: 0.75rem 1rem;
+	font-size: 0.8125rem;
+}
+
+.cbi-section > .cbi-section {
+	margin-top: 0.75rem;
+}
+
+.cbi-section-remove {
+	float: none;
+	position: absolute;
+	top: 0.75rem;
+	right: 0.875rem;
+	margin: 0;
+	z-index: 2;
+}
+
+.cbi-section-remove > .cbi-button {
+	height: 1.75rem;
+	padding: 0 0.5rem;
+	font-size: 0.75rem;
+	border-color: transparent;
+	background: transparent;
+	color: var(--muted-foreground);
+	box-shadow: none;
+}
+
+.cbi-section-remove > .cbi-button:hover {
+	color: var(--destructive);
+	background: color-mix(in oklab, var(--destructive) 8%, transparent);
+	border-color: transparent;
+}
+
+/* section footer (create / add buttons) */
+.cbi-section-create {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0.875rem 0 0;
+	padding: 0.75rem 0 0;
+	border-top: 1px dashed var(--border);
+}
+
+.cbi-section-create > * {
+	margin: 0;
+	flex: 1 1 auto;
+}
+
+.cbi-section-create-name {
+	max-width: 18rem;
+}
+
+.cbi-section-create > .cbi-button,
+.cbi-section-create > .cbi-button-add,
+.cbi-section-create > input[type="submit"] {
+	flex: 0 0 auto;
+}
+
+/* ==================================================================
+ * Form rows
+ * ================================================================ */
+.cbi-value {
+	display: grid;
+	grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+	align-items: start;
+	gap: 0.25rem 1.25rem;
+	margin: 0;
+	padding: 0.875rem 0;
+	border-bottom: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+	flex-wrap: nowrap;
+}
+
+.cbi-value:last-child,
+.cbi-value-last {
+	border-bottom: 0;
+	padding-bottom: 0.25rem;
+}
+
+.cbi-value:first-child {
+	padding-top: 0.25rem;
+}
+
+.cbi-value label.cbi-value-title,
+.cbi-value > .cbi-value-title {
+	flex: none;
+	padding-top: 0.4375rem;
+	text-align: left;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1.4;
+	color: var(--foreground);
+	width: auto;
+}
+
+.cbi-value-title small {
+	display: block;
+	margin-top: 0.125rem;
+	font-weight: 400;
+	font-size: 0.75rem;
+	color: var(--muted-foreground);
+}
+
+.cbi-value-field {
+	margin-left: 0;
+	min-width: 0;
+	flex: none;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.cbi-value-field > .cbi-input-text,
+.cbi-value-field > .cbi-input-password {
+	flex: 0 1 auto;
+}
+
+.cbi-value-field > *:only-child {
+	margin-right: 0;
+}
+
+.cbi-value-description {
+	flex-basis: 100%;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	color: var(--muted-foreground);
+	margin: 0.3125rem 0 0;
+}
+
+.cbi-value-description:not(:empty)::before {
+	content: none;
+}
+
+.cbi-value > .cbi-section,
+.cbi-value > .cbi-tblsection {
+	width: 100%;
+	grid-column: 1 / -1;
+}
+
+.cbi-value > .cbi-section {
+	margin-top: 0.25rem;
+}
+
+/* checkbox rows sit closer together */
+.cbi-value-field > .cbi-checkbox,
+.cbi-value-field > div > .cbi-radio {
+	height: auto;
+	min-height: 2.25rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	font-size: 0.8125rem;
+}
+
+.cbi-radio {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.375rem;
+	cursor: pointer;
+	margin-right: 1rem;
+}
+
+.cbi-value-error input,
+.cbi-input-invalid {
+	border-color: var(--destructive) !important;
+}
+
+.cbi-value-error input:focus-visible,
+.cbi-input-invalid:focus-visible {
+	box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 30%, transparent) !important;
+}
+
+.cbi-value-error .cbi-value-title {
+	color: var(--destructive);
+}
+
+.cbi-section-error {
+	background: color-mix(in oklab, var(--destructive) 7%, var(--card));
+	border: 1px solid color-mix(in oklab, var(--destructive) 28%, var(--border));
+	border-radius: var(--radius-md);
+	padding: 0.625rem 0.875rem;
+	margin: 0.75rem 0;
+	color: var(--destructive);
+	font-size: 0.8125rem;
+}
+
+.cbi-section-error ul {
+	margin: 0.25rem 0 0 1rem;
+}
+
+/* ==================================================================
+ * Tables
+ * ================================================================ */
+.table {
+	display: table;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+	font-size: 0.8125rem;
+	border-collapse: separate;
+	border-spacing: 0;
+	position: relative;
+	table-layout: auto;
+}
+
+.table .tr {
+	display: table-row;
+}
+
+.table .th,
+.table .td {
+	display: table-cell;
+	vertical-align: middle;
+	padding: 0.625rem 0.75rem;
+	line-height: 1.45;
+	text-align: left;
+	border-top: 0;
+	border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+}
+
+.table .th {
+	background: color-mix(in oklab, var(--muted) 70%, var(--card));
+	color: var(--muted-foreground);
+	font-size: 0.75rem;
+	font-weight: 500;
+	letter-spacing: 0.01em;
+	white-space: nowrap;
+	border-bottom: 1px solid var(--border);
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+	vertical-align: middle;
+}
+
+.table .tr:first-child .th:first-child {
+	border-top-left-radius: var(--radius-md);
+}
+
+.table .tr:first-child .th:last-child {
+	border-top-right-radius: var(--radius-md);
+}
+
+.table .tr:last-child .td {
+	border-bottom: 0;
+}
+
+.table .tr:hover .td {
+	background: color-mix(in oklab, var(--muted) 55%, transparent);
+}
+
+.table .tr.cbi-section-table-titles:hover .td,
+.table .tr.cbi-section-table-titles:hover .th {
+	background: color-mix(in oklab, var(--muted) 70%, var(--card));
+}
+
+/* bleed tables to the card edges */
+.cbi-section > .cbi-section-node > .table,
+.cbi-section > .table,
+.cbi-section-node > .cbi-tblsection > .table {
+	width: calc(100% + 2.5rem);
+	margin: 0 -1.25rem;
+}
+
+.cbi-section > .cbi-section-node > .table .th:first-child,
+.cbi-section > .cbi-section-node > .table .td:first-child,
+.cbi-section > .table .th:first-child,
+.cbi-section > .table .td:first-child {
+	padding-left: 1.25rem;
+}
+
+.cbi-section > .cbi-section-node > .table .th:last-child,
+.cbi-section > .cbi-section-node > .table .td:last-child,
+.cbi-section > .table .th:last-child,
+.cbi-section > .table .td:last-child {
+	padding-right: 1.25rem;
+}
+
+.table .td.cbi-section-actions,
+.table .th.cbi-section-actions {
+	text-align: right;
+	white-space: nowrap;
+	width: 1%;
+}
+
+.td.cbi-section-actions > *,
+.td.cbi-section-actions > * > form {
+	display: inline-flex;
+	margin: 0;
+	gap: 0.25rem;
+}
+
+.tr.cbi-section-table-descr .th,
+.cbi-section-table-descr .th {
+	font-weight: 400;
+	font-size: 0.75rem;
+	color: var(--muted-foreground);
+	background: transparent;
+	border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+	white-space: normal;
+}
+
+.tr.placeholder {
+	height: 5rem;
+}
+
+.tr.placeholder > .td {
+	position: static;
+	text-align: center;
+	color: var(--muted-foreground);
+	line-height: 5rem;
+	font-size: 0.8125rem;
+}
+
+.cbi-value-field table td {
+	padding: 0.25rem 0.5rem 0.25rem 0;
+	border: 0;
+}
+
+.table.valign-middle .td {
+	vertical-align: middle;
+}
+
+.table.cbi-section-table .cbi-select,
+.table.cbi-section-table .cbi-dropdown:not(.btn):not(.cbi-button) {
+	width: 100%;
+	max-width: none;
+	min-width: 6rem;
+}
+
+/* ==================================================================
+ * Tabs
+ * ================================================================ */
+.tabs,
+.cbi-tabmenu {
+	display: inline-flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.125rem;
+	margin: 0 0 1rem;
+	padding: 0.25rem;
+	list-style: none;
+	background: var(--muted);
+	background-image: none;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	max-width: 100%;
+}
+
+.tabs > li,
+.cbi-tabmenu > li {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	height: 1.875rem;
+	max-width: none;
+	margin: 0;
+	background: transparent;
+	border: 0;
+	border-radius: var(--radius-md);
+	color: var(--muted-foreground);
+	transition: background-color 120ms ease, color 120ms ease;
+}
+
+.tabs > li > a,
+.cbi-tabmenu > li > a {
+	display: inline-flex;
+	align-items: center;
+	height: 100%;
+	padding: 0 0.75rem;
+	border-radius: inherit;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	line-height: 1;
+	color: inherit;
+	text-decoration: none;
+	outline: none;
+}
+
+.tabs > li.active,
+.cbi-tabmenu > li.cbi-tab {
+	background: var(--background);
+	color: var(--foreground);
+	box-shadow: var(--shadow-2xs);
+}
+
+.tabs > li:not(.active):hover,
+.cbi-tabmenu > .cbi-tab-disabled:hover {
+	background: color-mix(in oklab, var(--background) 60%, transparent);
+	background-image: none;
+	color: var(--foreground);
+}
+
+.tabs > li:not(.active),
+.cbi-tabmenu > .cbi-tab-disabled {
+	background: transparent;
+	background-image: none;
+	color: var(--muted-foreground);
+}
+
+.tabs > li > a:focus-visible,
+.cbi-tabmenu > li > a:focus-visible {
+	text-decoration: none;
+	box-shadow: 0 0 0 2px var(--ring);
+}
+
+.cbi-tab-disabled[data-errors]::after {
+	content: attr(data-errors);
+	margin-left: 0.375rem;
+	min-width: 1.125rem;
+	height: 1.125rem;
+	padding: 0 0.25rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--destructive);
+	color: var(--destructive-foreground);
+	border-radius: 999px;
+	font-size: 0.6875rem;
+	font-weight: 600;
+}
+
+.cbi-tab-descr {
+	margin: -0.5rem 0 1rem;
+	font-size: 0.8125rem;
+	color: var(--muted-foreground);
+}
+
+.cbi-tabmenu.map {
+	margin: 0 0 1rem;
+}
+
+.cbi-tabmenu.map > li {
+	height: 2.125rem;
+	font-size: 0.8125rem;
+	font-weight: 500;
+}
+
+.tab-content > div {
+	display: none;
+}
+
+.tab-content > .active {
+	display: block;
+}
+
+/* tabmenu host rendered by the theme menu script */
+.tabmenu-host {
+	margin-bottom: 1rem;
+}
+
+.tabmenu-host:empty {
+	display: none;
+}
+
+/* ==================================================================
+ * Alerts
+ * ================================================================ */
+.alert-message {
+	position: relative;
+	display: block;
+	padding: 0.875rem 1rem;
+	margin: 0 0 1rem;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	color: var(--foreground);
+	font-size: 0.8125rem;
+	line-height: 1.55;
+	background-image: none;
+	box-shadow: var(--shadow-2xs);
+}
+
+.alert-message h4 {
+	font-size: 0.875rem;
+	font-weight: 600;
+	margin: 0 0 0.25rem;
+	color: inherit;
+	line-height: 1.4;
+}
+
+.alert-message p {
+	font-size: 0.8125rem;
+	margin: 0 0 0.5rem;
+	color: color-mix(in oklab, currentColor 82%, transparent);
+}
+
+.alert-message p:last-child {
+	margin-bottom: 0;
+}
+
+.alert-message .right {
+	float: none;
+	margin-top: 0.75rem;
+}
+
+.alert-message.warning {
+	background: color-mix(in oklab, var(--warning) 12%, var(--card));
+	border-color: color-mix(in oklab, var(--warning) 38%, var(--border));
+	color: color-mix(in oklab, var(--warning) 72%, var(--foreground));
+}
+
+.alert-message.error,
+.alert-message.danger {
+	background: color-mix(in oklab, var(--destructive) 8%, var(--card));
+	border-color: color-mix(in oklab, var(--destructive) 30%, var(--border));
+	color: var(--destructive);
+}
+
+.alert-message.success {
+	background: color-mix(in oklab, var(--success) 10%, var(--card));
+	border-color: color-mix(in oklab, var(--success) 32%, var(--border));
+	color: color-mix(in oklab, var(--success) 78%, var(--foreground));
+}
+
+.alert-message.info {
+	background: color-mix(in oklab, var(--info) 9%, var(--card));
+	border-color: color-mix(in oklab, var(--info) 30%, var(--border));
+	color: color-mix(in oklab, var(--info) 75%, var(--foreground));
+}
+
+.alert-message.notice {
+	background: var(--muted);
+	border-color: var(--border);
+	color: var(--muted-foreground);
+}
+
+/* ==================================================================
+ * Badges / labels
+ * ================================================================ */
+.label,
+.label.important,
+.label.warning,
+.label.success,
+.btn.label {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+	height: 1.375rem;
+	padding: 0 0.4375rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--secondary);
+	color: var(--secondary-foreground);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	line-height: 1;
+	letter-spacing: 0.01em;
+	text-decoration: none;
+	box-shadow: none;
+	vertical-align: middle;
+}
+
+.label.important {
+	background: var(--primary);
+	border-color: var(--primary);
+	color: var(--primary-foreground);
+}
+
+.label.success {
+	background: color-mix(in oklab, var(--success) 14%, var(--card));
+	border-color: color-mix(in oklab, var(--success) 32%, var(--border));
+	color: color-mix(in oklab, var(--success) 75%, var(--foreground));
+}
+
+.label.warning {
+	background: color-mix(in oklab, var(--warning) 16%, var(--card));
+	border-color: color-mix(in oklab, var(--warning) 38%, var(--border));
+	color: color-mix(in oklab, var(--warning) 70%, var(--foreground));
+}
+
+a.label:hover {
+	background: var(--accent);
+	text-decoration: none;
+}
+
+.header-indicators .label,
+#indicators .label,
+#indicators > span {
+	display: inline-flex;
+	align-items: center;
+	height: 1.75rem;
+	padding: 0 0.5625rem;
+	border-radius: var(--radius-md);
+	font-size: 0.75rem;
+	font-weight: 500;
+	line-height: 1;
+	border: 1px solid var(--border);
+	background: var(--muted);
+	color: var(--muted-foreground);
+	text-decoration: none;
+}
+
+#indicators > span[data-clickable] {
+	cursor: pointer;
+}
+
+#indicators > span[data-clickable]:hover {
+	background: var(--accent);
+	color: var(--accent-foreground);
+}
+
+#indicators > span[data-style="active"] {
+	background: color-mix(in oklab, var(--warning) 16%, var(--card));
+	border-color: color-mix(in oklab, var(--warning) 40%, var(--border));
+	color: color-mix(in oklab, var(--warning) 70%, var(--foreground));
+}
+
+#indicators:empty {
+	display: none;
+}
+
+/* ==================================================================
+ * Modal
+ * ================================================================ */
+#modal_overlay {
+	background: oklch(0 0 0 / 0.45);
+	backdrop-filter: blur(3px);
+	-webkit-backdrop-filter: blur(3px);
+	padding: 0 1rem;
+	border: 0;
+}
+
+.modal {
+	position: relative;
+	width: min(36rem, 100%);
+	max-width: 36rem;
+	margin: 8vh auto 4rem;
+	padding: 1.25rem;
+	background: var(--card);
+	color: var(--card-foreground);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-xl);
+	box-shadow: var(--shadow-lg);
+	min-width: 0;
+}
+
+.modal.alert-message {
+	background: var(--card);
+	color: var(--card-foreground);
+}
+
+.modal > h4 {
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: -0.015em;
+	margin: 0 0 0.75rem;
+	line-height: 1.4;
+}
+
+.modal > * {
+	line-height: 1.55;
+	margin-bottom: 0.75rem;
+	max-width: 100%;
+}
+
+.modal > p {
+	font-size: 0.8125rem;
+	color: var(--muted-foreground);
+}
+
+.modal > .button-row {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	margin: 1rem 0 0;
+	padding: 0;
+}
+
+.modal > .button-row > button,
+.modal > .button-row > .btn {
+	margin: 0 !important;
+}
+
+.modal > .right {
+	float: none;
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+	margin: 0.75rem 0 0;
+}
+
+#modal_overlay > .modal.login {
+	width: min(24rem, 100%);
+}
+
+.modal .cbi-map,
+.modal .cbi-section {
+	border: 0;
+	box-shadow: none;
+	padding: 0;
+	background: transparent;
+}
+
+.modal .cbi-section > h3 {
+	display: none;
+}
+
+.modal > pre,
+.modal > textarea {
+	white-space: pre-wrap;
+	overflow: auto;
+	width: 100%;
+	max-height: 50vh;
+}
+
+/* ==================================================================
+ * Dropdown (shadcn Select)
+ * ================================================================ */
+.cbi-dropdown:not(.btn):not(.cbi-button) {
+	background: var(--background);
+	border: 1px solid var(--input);
+	border-radius: var(--radius-md);
+	color: var(--foreground);
+	box-shadow: var(--shadow-2xs);
+	min-height: 2.25rem;
+	padding: 0 !important;
+	align-items: center;
+}
+
+.cbi-dropdown:not(.btn):not(.cbi-button) > ul > li {
+	padding: 0.25rem 0.6875rem;
+	color: inherit;
+	font-size: 0.8125rem;
+	min-width: 0;
+}
+
+.cbi-dropdown > .open,
+.cbi-dropdown > .more {
+	color: var(--muted-foreground);
+	padding: 0 0.5rem;
+	line-height: 1;
+	font-size: 0.75rem;
+}
+
+.cbi-dropdown > .open::before {
+	content: "⌄";
+	font-size: 0.875rem;
+	line-height: 1;
+}
+
+.cbi-dropdown.btn,
+.cbi-dropdown.cbi-button {
+	gap: 0.125rem;
+}
+
+.cbi-dropdown[open] {
+	z-index: 1100;
+	border-color: var(--ring) !important;
+	box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 35%, transparent);
+}
+
+.cbi-dropdown[open] > ul.dropdown {
+	top: calc(100% + 0.25rem);
+	background: var(--popover);
+	color: var(--popover-foreground);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	box-shadow: var(--shadow-md);
+	padding: 0.25rem;
+	min-width: 100%;
+	max-width: 24rem;
+	z-index: 1100;
+}
+
+.cbi-dropdown[open] > ul.dropdown > li {
+	display: flex !important;
+	align-items: center;
+	min-height: 1.875rem;
+	padding: 0.375rem 0.5rem;
+	border: 0;
+	border-radius: var(--radius-sm);
+	font-size: 0.8125rem;
+	color: inherit;
+	cursor: pointer;
+}
+
+.cbi-dropdown[open] > ul.dropdown > li[selected] {
+	background: var(--accent);
+	color: var(--accent-foreground);
+	font-weight: 500;
+}
+
+.cbi-dropdown[open] > ul.dropdown > li.focus,
+.cbi-dropdown[open] > ul.dropdown > li:hover {
+	background: var(--accent);
+	color: var(--accent-foreground);
+}
+
+.cbi-dropdown[open] > ul.dropdown > li[selected].focus,
+.cbi-dropdown[open] > ul.dropdown > li[selected]:hover {
+	background: var(--accent);
+	background-image: none;
+}
+
+.cbi-dropdown[open] > ul.dropdown > li[unselectable] {
+	opacity: 0.5;
+	cursor: default;
+}
+
+.cbi-dropdown > ul > li[placeholder],
+.cbi-dropdown:not(.btn):not(.cbi-button) > ul > li[placeholder] {
+	color: var(--muted-foreground);
+}
+
+.cbi-dropdown > ul > li > form > input[type="checkbox"] {
+	margin-right: 0.5rem;
+}
+
+/* ==================================================================
+ * Tooltip
+ * ================================================================ */
+.cbi-tooltip {
+	background: var(--primary);
+	color: var(--primary-foreground);
+	border: 0;
+	border-radius: var(--radius-sm);
+	box-shadow: var(--shadow-md);
+	padding: 0.3125rem 0.5rem;
+	font-size: 0.75rem;
+	line-height: 1.4;
+	white-space: pre-line;
+	max-width: 22rem;
+	z-index: 1200;
+}
+
+.cbi-tooltip.error,
+.cbi-tooltip.success,
+.cbi-tooltip.info,
+.cbi-tooltip.notice {
+	background: var(--primary);
+	color: var(--primary-foreground);
+	border-color: transparent;
+	background-image: none;
+}
+
+.zonebadge .cbi-tooltip {
+	background: var(--popover);
+	color: var(--popover-foreground);
+	border: 1px solid var(--border);
+	box-shadow: var(--shadow-md);
+	border-radius: var(--radius-md);
+}
+
+.cbi-tooltip-container {
+	text-decoration: underline dotted color-mix(in oklab, var(--muted-foreground) 60%, transparent);
+	text-underline-offset: 3px;
+	cursor: help;
+}
+
+.cbi-title-ref {
+	color: var(--foreground);
+	font-weight: 500;
+}
+
+.cbi-title-ref::after {
+	content: "↗";
+	font-size: 0.75em;
+	opacity: 0.5;
+	margin-left: 0.125rem;
+}
+
+/* ==================================================================
+ * Progress bar
+ * ================================================================ */
+.cbi-progressbar {
+	position: relative;
+	height: 0.5rem;
+	min-width: 8rem;
+	margin: 1.5rem 0 0.5rem;
+	background: var(--muted);
+	border: 0;
+	border-radius: 999px;
+	box-shadow: inset 0 1px 1px oklch(0 0 0 / 0.06);
+}
+
+.cbi-progressbar > div {
+	height: 100%;
+	background: var(--primary);
+	border-radius: 999px;
+	transition: width 240ms ease;
+}
+
+.cbi-progressbar::before {
+	top: -1.35rem;
+	font-size: 0.75rem;
+	color: var(--muted-foreground);
+	font-weight: 500;
+}
+
+/* ==================================================================
+ * Spinner
+ * ================================================================ */
+#view > div.spinning:first-child {
+	margin: 3rem auto;
+	text-align: center;
+}
+
+.spinning {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	color: var(--muted-foreground);
+	font-size: 0.8125rem;
+	position: relative;
+	padding-left: 1.25rem;
+	height: auto;
+	min-height: 1.5rem;
+	background: none;
+}
+
+.spinning::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0.875rem;
+	height: 0.875rem;
+	margin-top: -0.4375rem;
+	border: 2px solid color-mix(in oklab, var(--foreground) 20%, transparent);
+	border-top-color: var(--foreground);
+	border-radius: 50%;
+	animation: beautiful-spin 0.7s linear infinite;
+	background: none;
+	box-shadow: none;
+}
+
+@keyframes beautiful-spin {
+	to { transform: rotate(360deg); }
+}
+
+#applyreboot-section {
+	animation: beautiful-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes beautiful-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.55; }
+}
+
+.flash {
+	animation: beautiful-flash 0.6s ease-out;
+}
+
+@keyframes beautiful-flash {
+	from { background-color: color-mix(in oklab, var(--primary) 8%, transparent); }
+	to { background-color: transparent; }
+}
+
+.fade-in {
+	animation: beautiful-fade-in 0.2s ease-out;
+}
+
+.fade-out {
+	animation: beautiful-fade-out 0.2s ease-in forwards;
+}
+
+@keyframes beautiful-fade-in {
+	from { opacity: 0; transform: translateY(-2px); }
+	to { opacity: 1; transform: none; }
+}
+
+@keyframes beautiful-fade-out {
+	from { opacity: 1; }
+	to { opacity: 0; }
+}

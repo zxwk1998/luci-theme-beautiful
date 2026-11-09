@@ -1,0 +1,621 @@
+/*!
+ * luci-theme-beautiful — application shell
+ * Sidebar + sticky top bar + centred content column.
+ */
+
+.app {
+	display: flex;
+	align-items: stretch;
+	min-height: 100dvh;
+	background: var(--background);
+}
+
+/* ==================================================================
+ * Sidebar
+ * ================================================================ */
+.app-sidebar {
+	flex: 0 0 var(--sidebar-width);
+	width: var(--sidebar-width);
+	position: sticky;
+	top: 0;
+	height: 100dvh;
+	background: var(--sidebar);
+	border-right: 1px solid var(--sidebar-border);
+	z-index: 60;
+}
+
+.app-sidebar-inner {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	min-height: 0;
+}
+
+.sidebar-brand-row {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.875rem 0.875rem 0.75rem;
+}
+
+.sidebar-brand {
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+	min-width: 0;
+	flex: 1 1 auto;
+	padding: 0.25rem;
+	border-radius: var(--radius-md);
+	text-decoration: none;
+	color: var(--sidebar-foreground);
+}
+
+.sidebar-brand:hover {
+	text-decoration: none;
+	background: var(--sidebar-accent);
+}
+
+.brand-logo {
+	width: 1.875rem;
+	height: 1.875rem;
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--radius-md);
+	background: var(--primary);
+	color: var(--primary-foreground);
+	box-shadow: var(--shadow-2xs);
+}
+
+.brand-logo > svg {
+	width: 1rem;
+	height: 1rem;
+}
+
+.brand-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	line-height: 1.2;
+}
+
+.brand-name {
+	font-size: 0.875rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.brand-desc {
+	font-size: 0.6875rem;
+	color: var(--muted-foreground);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sidebar-scroll {
+	flex: 1 1 auto;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 0.25rem 0.625rem 1rem;
+	overscroll-behavior: contain;
+}
+
+.sidebar-footer {
+	flex: 0 0 auto;
+	border-top: 1px solid var(--sidebar-border);
+	padding: 0.625rem 0.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.sidebar-version {
+	font-size: 0.6875rem;
+	color: var(--muted-foreground);
+	line-height: 1.4;
+}
+
+.sidebar-version a {
+	text-decoration: none;
+}
+
+/* ------------------------------------------------------------------
+ * Navigation tree
+ * ---------------------------------------------------------------- */
+.sidebar-nav {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.nav-group + .nav-group {
+	margin-top: 0.5rem;
+}
+
+.nav-group-label {
+	appearance: none;
+	background: none;
+	border: 0;
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 0.375rem;
+	padding: 0.375rem 0.5rem;
+	border-radius: var(--radius-sm);
+	font-family: inherit;
+	font-size: 0.6875rem;
+	font-weight: 500;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--muted-foreground);
+	cursor: pointer;
+	text-align: left;
+	transition: color 120ms ease, background-color 120ms ease;
+}
+
+.nav-group-label:hover {
+	color: var(--sidebar-foreground);
+	background: var(--sidebar-accent);
+}
+
+.nav-group-label:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 1px;
+}
+
+.nav-group-text {
+	flex: 1 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.nav-group-chevron {
+	width: 0.75rem;
+	height: 0.75rem;
+	flex: 0 0 auto;
+	opacity: 0.6;
+	transition: transform 160ms ease;
+}
+
+.nav-group[data-collapsed="true"] .nav-group-chevron {
+	transform: rotate(-90deg);
+}
+
+.nav-items {
+	list-style: none;
+	margin: 0.125rem 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+}
+
+.nav-group[data-collapsed="true"] .nav-items {
+	display: none;
+}
+
+.nav-link {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	height: 2.125rem;
+	padding: 0 0.5rem;
+	border-radius: var(--radius-md);
+	color: var(--muted-foreground);
+	text-decoration: none;
+	font-size: 0.8125rem;
+	font-weight: 400;
+	line-height: 1;
+	transition: background-color 120ms ease, color 120ms ease;
+	position: relative;
+}
+
+.nav-link:hover {
+	background: var(--sidebar-accent);
+	color: var(--sidebar-accent-foreground);
+	text-decoration: none;
+}
+
+.nav-link:focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: -2px;
+}
+
+.nav-link.active {
+	background: var(--sidebar-accent);
+	color: var(--sidebar-foreground);
+	font-weight: 500;
+}
+
+.nav-link.active::before {
+	content: "";
+	position: absolute;
+	left: -0.625rem;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 2px;
+	height: 1.125rem;
+	border-radius: 0 2px 2px 0;
+	background: var(--primary);
+}
+
+.nav-icon {
+	flex: 0 0 auto;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 1rem;
+	height: 1rem;
+	color: currentColor;
+	opacity: 0.75;
+}
+
+.nav-icon > svg {
+	width: 1rem;
+	height: 1rem;
+	display: block;
+}
+
+.nav-link.active .nav-icon {
+	opacity: 1;
+}
+
+.nav-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------
+ * Mode switcher (multi-app LuCI setups)
+ * ---------------------------------------------------------------- */
+.mode-menu {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+}
+
+.mode-menu > li > a {
+	display: inline-flex;
+	align-items: center;
+	height: 1.5rem;
+	padding: 0 0.5rem;
+	border-radius: var(--radius-sm);
+	font-size: 0.6875rem;
+	font-weight: 500;
+	color: var(--muted-foreground);
+	background: var(--sidebar-accent);
+	text-decoration: none;
+}
+
+.mode-menu > li.active > a {
+	background: var(--primary);
+	color: var(--primary-foreground);
+}
+
+/* ==================================================================
+ * Main column
+ * ================================================================ */
+.app-body {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+/* ------------------------------------------------------------------
+ * Top bar
+ *
+ * The bar spans the full column so its translucent backdrop runs edge
+ * to edge, while its padding is derived from the content column so the
+ * breadcrumb and the page title line up with the cards underneath —
+ * even when the viewport is wider than --content-max.
+ * ---------------------------------------------------------------- */
+.app-topbar {
+	position: sticky;
+	top: 0;
+	z-index: 40;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	height: var(--topbar-height);
+	padding: 0 max(var(--shell-gutter), calc((100% - var(--content-max)) / 2 + var(--shell-gutter)));
+	background: color-mix(in oklab, var(--background) 82%, transparent);
+	backdrop-filter: saturate(180%) blur(12px);
+	-webkit-backdrop-filter: saturate(180%) blur(12px);
+	border-bottom: 1px solid var(--border);
+}
+
+.topbar-nav {
+	flex: 1 1 auto;
+	min-width: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	overflow: hidden;
+}
+
+.topbar-titles {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.1875rem;
+	min-width: 0;
+	line-height: 1.2;
+}
+
+.topbar-title {
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: -0.021em;
+	color: var(--foreground);
+	margin: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 1.3;
+}
+
+.topbar-title:empty {
+	display: none;
+}
+
+.breadcrumb:empty {
+	display: none;
+}
+
+.topbar-actions {
+	flex: 0 0 auto;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+/* breadcrumb -------------------------------------------------------
+ * Ancestor trail only — the current page is carried by the title
+ * below, so the trail never repeats the heading. Links keep a hover
+ * surface, but the negative inline offset keeps the first crumb's
+ * text flush with the title's left edge.
+ * ---------------------------------------------------------------- */
+.breadcrumb {
+	list-style: none;
+	margin: 0 0 0 -0.3125rem;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	gap: 0.125rem;
+	min-width: 0;
+	float: none;
+	font-size: 0.75rem;
+	line-height: 1.3;
+	letter-spacing: 0.003em;
+	color: var(--muted-foreground);
+}
+
+.breadcrumb li {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.125rem;
+	min-width: 0;
+	white-space: nowrap;
+	color: inherit;
+}
+
+/* chevron separator, drawn as a masked glyph so it follows the text colour */
+.breadcrumb li:not(:last-child)::after {
+	content: "";
+	order: 2;
+	flex: 0 0 auto;
+	width: 0.75rem;
+	height: 0.75rem;
+	background-color: currentColor;
+	opacity: 0.4;
+	-webkit-mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="m9 18 6-6-6-6"/%3E%3C/svg%3E') center / 0.625rem 0.625rem no-repeat;
+	mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="m9 18 6-6-6-6"/%3E%3C/svg%3E') center / 0.625rem 0.625rem no-repeat;
+}
+
+.breadcrumb li > a {
+	display: inline-block;
+	max-width: 16rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: inherit;
+	text-decoration: none;
+	padding: 0.125rem 0.3125rem;
+	border-radius: var(--radius-sm);
+	font-weight: 400;
+	transition: color 120ms ease, background-color 120ms ease;
+}
+
+.breadcrumb li > a:hover {
+	color: var(--foreground);
+	background: var(--muted);
+	text-decoration: none;
+}
+
+.breadcrumb li.active {
+	color: var(--foreground);
+	font-weight: 500;
+}
+
+.breadcrumb li.active > a {
+	color: var(--foreground);
+}
+
+.breadcrumb li.active > span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.app-main {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.app-main-inner {
+	width: 100%;
+	max-width: var(--content-max);
+	margin: 0 auto;
+	padding: 1.5rem 1.5rem 3.5rem;
+}
+
+.app-footer {
+	border-top: 1px solid var(--border);
+	color: var(--muted-foreground);
+	font-size: 0.75rem;
+	padding: 0.875rem 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+	float: none;
+	height: auto;
+	margin: 0;
+}
+
+.app-footer a {
+	text-decoration: none;
+	color: var(--muted-foreground);
+}
+
+.app-footer a:hover {
+	color: var(--foreground);
+}
+
+/* ==================================================================
+ * Buttons — icon buttons used by the shell
+ * ================================================================ */
+.btn-icon {
+	appearance: none;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	padding: 0;
+	border: 1px solid transparent;
+	border-radius: var(--radius-md);
+	background: transparent;
+	color: var(--muted-foreground);
+	cursor: pointer;
+	transition: background-color 120ms ease, color 120ms ease;
+	flex: 0 0 auto;
+	box-shadow: none;
+}
+
+.btn-icon:hover {
+	background: var(--muted);
+	color: var(--foreground);
+	box-shadow: none;
+}
+
+.btn-icon:active {
+	transform: translateY(0.5px);
+}
+
+.btn-icon > svg {
+	width: 1.0625rem;
+	height: 1.0625rem;
+}
+
+.sidebar-trigger,
+.sidebar-close {
+	display: none;
+}
+
+/* theme toggle shows the icon of the *target* mode */
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+	display: none;
+}
+
+:root[data-darkmode="true"] .theme-toggle .icon-sun {
+	display: block;
+}
+
+:root:not([data-darkmode="true"]) .theme-toggle .icon-moon {
+	display: block;
+}
+
+.app-scrim {
+	position: fixed;
+	inset: 0;
+	background: oklch(0 0 0 / 0.4);
+	backdrop-filter: blur(2px);
+	z-index: 50;
+	border: 0;
+}
+
+.app-scrim[hidden] {
+	display: none;
+}
+
+/* ==================================================================
+ * Responsive — collapse the sidebar into an off-canvas sheet
+ * ================================================================ */
+@media screen and (max-width: 1023px) {
+	:root {
+		--shell-gutter: 0.875rem;
+	}
+
+	.app-sidebar {
+		position: fixed;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		height: 100dvh;
+		width: min(17rem, 84vw);
+		flex-basis: auto;
+		transform: translateX(-102%);
+		transition: transform 220ms cubic-bezier(0.32, 0.72, 0, 1);
+		box-shadow: var(--shadow-lg);
+	}
+
+	body.sidebar-open .app-sidebar {
+		transform: translateX(0);
+	}
+
+	.sidebar-trigger,
+	.sidebar-close {
+		display: inline-flex;
+	}
+
+	.app-topbar {
+		padding: 0 0.875rem;
+	}
+
+	.app-main-inner {
+		padding: 1.125rem 0.875rem 3rem;
+	}
+
+	.app-footer {
+		padding: 0.875rem;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.breadcrumb {
+		font-size: 0.75rem;
+	}
+
+	.breadcrumb li:not(:last-child):not(:nth-last-child(2)) {
+		display: none;
+	}
+}
+
+body.sidebar-open {
+	overflow: hidden;
+}

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-darkmode="false">
+<head>
+<meta charset="utf-8">
+<title>Header preview — luci-theme-beautiful</title>
+<link rel="stylesheet" href="../htdocs/luci-static/beautiful/cascade.css">
+<style>
+	/* preview-only chrome */
+	body { margin: 0; }
+
+	.pv-panel {
+		position: fixed;
+		right: 1rem;
+		bottom: 1rem;
+		z-index: 999;
+		display: flex;
+		gap: 0.375rem;
+		padding: 0.375rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		background: color-mix(in oklab, var(--card) 88%, transparent);
+		backdrop-filter: blur(10px);
+		box-shadow: var(--shadow-md);
+		font: 500 0.75rem/1 var(--font-sans);
+	}
+
+	.pv-panel button {
+		height: 1.75rem;
+		padding: 0 0.7rem;
+		border: 1px solid transparent;
+		border-radius: 999px;
+		background: transparent;
+		color: var(--muted-foreground);
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.pv-panel button[aria-pressed="true"] {
+		background: var(--foreground);
+		color: var(--background);
+	}
+
+	/* a realistic form card body */
+	.pv-stats {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+		gap: 0.75rem;
+		margin-top: 0.875rem;
+	}
+
+	.pv-stat {
+		padding: 0.75rem 0.875rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		background: var(--card);
+	}
+
+	.pv-stat span {
+		display: block;
+		font-size: 0.6875rem;
+		color: var(--muted-foreground);
+		margin-bottom: 0.25rem;
+	}
+
+	.pv-stat strong {
+		font-size: 1.125rem;
+		font-weight: 600;
+		letter-spacing: -0.02em;
+	}
+</style>
+</head>
+<body>
+<div class="app">
+	<aside class="app-sidebar">
+		<div class="app-sidebar-inner">
+			<div class="sidebar-brand-row">
+				<a class="sidebar-brand" href="#">
+					<span class="brand-logo" aria-hidden="true">
+						<svg viewBox="0 0 24 24" fill="currentColor" focusable="false">
+							<path d="M12 2.5c.38 3.1.38 3.1 1.5 4.22 1.12 1.12 1.12 1.12 4.22 1.5-3.1.38-3.1.38-4.22 1.5-1.12 1.12-1.12 1.12-1.5 4.22-.38-3.1-.38-3.1-1.5-4.22C9.38 8.6 9.38 8.6 6.28 8.22c3.1-.38 3.1-.38 4.22-1.5C11.62 5.6 11.62 5.6 12 2.5Z"/>
+							<circle cx="17.75" cy="18" r="1.75" opacity=".7"/>
+							<circle cx="7" cy="16.5" r="2.5" opacity=".35"/>
+						</svg>
+					</span>
+					<span class="brand-text">
+						<span class="brand-name">OpenWrt</span>
+						<span class="brand-desc">GL-MT3000</span>
+					</span>
+				</a>
+			</div>
+			<div class="sidebar-scroll">
+				<ul class="sidebar-nav">
+					<li class="nav-group">
+						<button class="nav-group-label" type="button">
+							<span class="nav-group-text">概览</span>
+							<svg class="nav-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+						</button>
+						<ul class="nav-items">
+							<li><a class="nav-link" href="#"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2.5 1.5"/></svg></span><span class="nav-text">状态</span></a></li>
+							<li><a class="nav-link active" href="#"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span><span class="nav-text">系统</span></a></li>
+						</ul>
+					</li>
+					<li class="nav-group">
+						<button class="nav-group-label" type="button">
+							<span class="nav-group-text">网络</span>
+							<svg class="nav-group-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+						</button>
+						<ul class="nav-items">
+							<li><a class="nav-link" href="#"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><rect x="3" y="9" width="18" height="6" rx="1.5"/></svg></span><span class="nav-text">接口</span></a></li>
+							<li><a class="nav-link" href="#"><span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4.5 11.5a11 11 0 0 1 15 0"/><path d="M8 15.2a6 6 0 0 1 8 0"/><circle cx="12" cy="19" r="1"/></svg></span><span class="nav-text">无线</span></a></li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			<div class="sidebar-footer">
+				<div class="sidebar-version">LuCI openwrt-24.10</div>
+			</div>
+		</div>
+	</aside>
+
+	<div class="app-body">
+		<header class="app-topbar">
+			<button class="btn-icon sidebar-trigger" type="button" aria-label="菜单">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+			</button>
+
+			<div class="topbar-nav">
+				<div class="topbar-titles">
+					<ol class="breadcrumb" id="breadcrumb">
+						<li><a href="#">状态</a></li>
+						<li><a href="#" id="crumb-group">系统</a></li>
+					</ol>
+					<h1 class="topbar-title" id="page-title">系统</h1>
+				</div>
+			</div>
+
+			<div class="topbar-actions">
+				<div id="indicators">
+					<span>已运行 3 天 4 小时</span>
+				</div>
+				<button class="btn-icon theme-toggle" type="button" aria-label="切换配色">
+					<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+					<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+				</button>
+			</div>
+		</header>
+
+		<main class="app-main">
+			<div class="app-main-inner">
+				<div class="cbi-map">
+					<h2 name="content" style="display:none">系统</h2>
+
+					<div class="cbi-section">
+						<h3>系统属性</h3>
+						<div class="cbi-section-node">
+							<div class="cbi-value">
+								<label class="cbi-value-title">主机名</label>
+								<div class="cbi-value-field"><input type="text" value="OpenWrt"></div>
+							</div>
+							<div class="cbi-value">
+								<label class="cbi-value-title">时区</label>
+								<div class="cbi-value-field">
+									<select><option>Asia/Shanghai</option></select>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="cbi-section">
+						<h3>运行状态</h3>
+						<div class="pv-stats">
+							<div class="pv-stat"><span>运行时间</span><strong>3 天 4 小时</strong></div>
+							<div class="pv-stat"><span>平均负载</span><strong>0.12</strong></div>
+							<div class="pv-stat"><span>内存占用</span><strong>38%</strong></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
+</div>
+
+<div class="pv-panel" role="group" aria-label="预览控制">
+	<button type="button" data-theme="light" aria-pressed="true">浅色</button>
+	<button type="button" data-theme="dark" aria-pressed="false">深色</button>
+	<button type="button" data-sample="short" aria-pressed="true">短标题</button>
+	<button type="button" data-sample="long" aria-pressed="false">长标题</button>
+</div>
+
+<script>
+	const samples = {
+		short: { crumbs: [ '状态', '系统' ], title: '系统' },
+		long:  { crumbs: [ '网络', '防火墙', '通信规则', '端口转发规则' ], title: '端口转发规则与流量控制策略' }
+	};
+
+	function applyTheme(name) {
+		document.documentElement.setAttribute('data-darkmode', name === 'dark' ? 'true' : 'false');
+		document.querySelectorAll('[data-theme]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.theme === name)));
+	}
+
+	function applySample(name) {
+		const s = samples[name] ?? samples.short;
+		const ol = document.getElementById('breadcrumb');
+		ol.innerHTML = '';
+
+		s.crumbs.forEach((text) => {
+			const li = document.createElement('li');
+
+			if (text === s.title) {
+				li.className = 'active';
+				li.innerHTML = `<span>${text}</span>`;
+			}
+			else {
+				li.innerHTML = `<a href="#">${text}</a>`;
+			}
+
+			ol.appendChild(li);
+		});
+
+		/* mirrors menu-beautiful.js: the heading wins, trailing duplicates are dropped */
+		while (ol.lastElementChild && ol.lastElementChild.textContent.trim() === s.title)
+			ol.lastElementChild.remove();
+
+		document.getElementById('page-title').textContent = s.title;
+		document.querySelectorAll('[data-sample]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sample === name)));
+	}
+
+	document.querySelectorAll('[data-theme]').forEach((btn) => {
+		btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+	});
+
+	document.querySelectorAll('[data-sample]').forEach((btn) => {
+		btn.addEventListener('click', () => applySample(btn.dataset.sample));
+	});
+
+	const params = new URLSearchParams(location.search);
+	applyTheme(params.get('theme') === 'dark' ? 'dark' : 'light');
+	applySample(params.get('sample') === 'long' ? 'long' : 'short');
+</script>
+</body>
+</html>

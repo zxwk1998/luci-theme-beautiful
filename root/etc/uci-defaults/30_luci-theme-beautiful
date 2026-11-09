@@ -1,0 +1,25 @@
+#!/bin/sh
+
+[ -n "${IPKG_INSTROOT}" ] && exit 0
+
+changed=0
+
+set_opt() {
+	local key=$1
+	local val=$2
+
+	if ! uci -q get "luci.$key" >/dev/null 2>&1; then
+		uci set "luci.$key=$val"
+		changed=1
+	fi
+}
+
+set_opt themes.Beautiful /luci-static/beautiful
+
+if [ "$PKG_UPGRADE" != 1 ] && [ $changed = 1 ]; then
+	set_opt main.mediaurlbase /luci-static/beautiful
+fi
+
+[ $changed = 1 ] && uci commit luci
+
+exit 0

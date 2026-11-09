@@ -1,0 +1,107 @@
+{#
+ luci-theme-beautiful — authorization page
+ Derived from luci-theme-bootstrap, licensed under the Apache License 2.0.
+-#}
+
+{% include('header', { blank_page: true }) %}
+
+<div class="auth-shell">
+	<div class="auth-card">
+		<div class="auth-brand">
+			<span class="brand-logo" aria-hidden="true">
+				<svg viewBox="0 0 24 24" fill="currentColor" focusable="false">
+					<path d="M12 2.5c.38 3.1.38 3.1 1.5 4.22 1.12 1.12 1.12 1.12 4.22 1.5-3.1.38-3.1.38-4.22 1.5-1.12 1.12-1.12 1.12-1.5 4.22-.38-3.1-.38-3.1-1.5-4.22C9.38 8.6 9.38 8.6 6.28 8.22c3.1-.38 3.1-.38 4.22-1.5C11.62 5.6 11.62 5.6 12 2.5Z"/>
+					<circle cx="17.75" cy="18" r="1.75" opacity=".7"/>
+					<circle cx="7" cy="16.5" r="2.5" opacity=".35"/>
+				</svg>
+			</span>
+			<span class="auth-brand-text">
+				<span class="auth-brand-name">{{ version.distname ?? 'LuCI' }}</span>
+				<span class="auth-brand-host">{{ ubus.call('system', 'board')?.hostname ?? '?' }}</span>
+			</span>
+		</div>
+
+		<div class="auth-head">
+			<h1>{{ _('Authorization Required') }}</h1>
+			<p>{{ _('Please enter your credentials to access this device.') }}</p>
+		</div>
+
+		{% if (auth_message): %}
+		<div class="alert-message{% if (auth_plugin): %} warning{% endif %}">
+			{{ auth_message }}
+		</div>
+		{% elif (fuser): %}
+		<div class="alert-message error">
+			{{ _('Invalid username and/or password! Please try again.') }}
+		</div>
+		{% endif %}
+
+		<form method="post" class="auth-form" id="luci-login-form">
+			<div class="auth-field">
+				<label class="cbi-value-title" for="luci_username">{{ _('Username') }}</label>
+				<input name="luci_username" id="luci_username" type="text" autocomplete="username"
+				       value="{{ entityencode(duser, true) }}" spellcheck="false" autocapitalize="off">
+			</div>
+
+			<div class="auth-field">
+				<label class="cbi-value-title" for="luci_password">{{ _('Password') }}</label>
+				<input name="luci_password" id="luci_password" type="password" autocomplete="current-password">
+			</div>
+
+			{% if (auth_fields): %}
+				{% for (let field in auth_fields): %}
+				<div class="auth-field">
+					<label for="{{ field.name }}">{{ _(field.label ?? field.name) }}</label>
+					<input
+						name="{{ field.name }}"
+						id="{{ field.name }}"
+						type="{{ field.type ?? 'text' }}"
+						{% if (field.placeholder): %}placeholder="{{ field.placeholder }}"{% endif %}
+						{% if (field.inputmode): %}inputmode="{{ field.inputmode }}"{% endif %}
+						{% if (field.pattern): %}pattern="{{ field.pattern }}"{% endif %}
+						{% if (field.maxlength): %}maxlength="{{ field.maxlength }}"{% endif %}
+						{% if (field.autocomplete): %}autocomplete="{{ field.autocomplete }}"{% endif %}
+						{% if (field.required): %}required{% endif %}
+					>
+				</div>
+				{% endfor %}
+			{% endif %}
+
+			{% if (auth_html): %}
+			<div class="auth-field">
+				{{ auth_html }}
+			</div>
+			{% endif %}
+
+			{% if (auth_assets): %}
+				{% for (let asset in auth_assets): %}
+					{% if (asset.type == 'script'): %}
+						<script src="{{ asset.src }}"></script>
+					{% endif %}
+				{% endfor %}
+			{% endif %}
+
+			<button type="submit" class="btn important auth-submit">{{ _('Log in') }}</button>
+		</form>
+	</div>
+
+	<div class="auth-meta">
+		{{ version.luciname }} {{ version.luciversion }}
+		&middot;
+		{{ version.distname }} {{ version.distversion }}
+	</div>
+</div>
+
+<script>
+	(function() {
+		var pwd = document.getElementById('luci_password'),
+		    usr = document.getElementById('luci_username');
+
+		if (pwd && !usr.value)
+			usr.focus();
+		else if (pwd)
+			pwd.focus();
+	})();
+</script>
+
+{% include('footer', { blank_page: true }) %}

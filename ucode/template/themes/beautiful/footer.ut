@@ -1,0 +1,31 @@
+{#
+ luci-theme-beautiful — page footer
+ Derived from luci-theme-bootstrap, licensed under the Apache License 2.0.
+-#}
+
+		{% if (!blank_page): %}
+					</div>
+				</main>
+
+				<footer class="app-footer">
+					<span>
+						{{ _('Powered by') }}
+						<a href="https://github.com/openwrt/luci" target="_blank" rel="noreferrer">
+							{{ version.luciname }} ({{ version.luciversion }})</a>
+						/
+						<a href="{{ entityencode(version.disturl ?? '#', true) }}" target="_blank" rel="noreferrer">
+							{{ version.distname }} {{ version.distversion }} ({{ version.distrevision }})</a>
+						{% if (lua_active): %}
+							/ {{ _('Lua compatibility mode active') }}
+						{% endif %}
+					</span>
+					<span class="footer-meta">
+						<a href="https://github.com/openwrt/luci" target="_blank" rel="noreferrer">luci-theme-beautiful</a>
+					</span>
+				</footer>
+			</div>
+		</div>
+		<script>L.require('menu-beautiful')</script>
+		{% endif %}
+	</body>
+</html>
