@@ -173,8 +173,18 @@ return baseclass.extend({
 		this.renderSidebar(path.groups, path.group, path.item, path.mode?.name ?? '');
 		this.renderBreadcrumb(path);
 
+		/*
+		 * Pass the dispatch *segments*, never a rendered URL: L.url() runs every
+		 * part through a sanitiser that silently drops anything starting with a
+		 * slash, so feeding it an absolute URL keeps only the leaf name and
+		 * yields /cgi-bin/luci/<leaf> — which is not a registered node.
+		 *
+		 * Segments are passed as separate arguments: array support in L.path()
+		 * only landed in LuCI 24.10, on 21.02/23.05 an array is stringified to
+		 * "a,b,c" (commas pass the sanitiser) and produces a bogus node name.
+		 */
 		if (path.item)
-			this.renderTabMenu(path.item, L.url(path.mode.name, path.group.name, path.item.name));
+			this.renderTabMenu(path.item, [ path.mode.name, path.group.name, path.item.name ]);
 	},
 
 	/* ---------------------------------------------------------------- */
@@ -315,20 +325,22 @@ return baseclass.extend({
 	},
 
 	/* ---------------------------------------------------------------- */
-	renderTabMenu(node, url, level) {
+	renderTabMenu(node, base, level) {
 		const container = document.querySelector('#tabmenu');
 
 		if (!container)
 			return E([]);
 
+		const segments = Array.isArray(base) ? base : [ base ];
+		const dispatch = L.env.dispatchpath ?? [];
 		const ul = E('ul', { 'class': 'tabs' });
 		const children = ui.menu.getChildren(node);
 		let activeNode = null;
 
 		children.forEach((child) => {
-			const isActive = (L.env.dispatchpath[3 + (level || 0)] == child.name);
+			const isActive = (dispatch[segments.length] == child.name);
 			const li = E('li', { 'class': (isActive ? 'active' : '') }, [
-				E('a', { 'href': L.url(url, child.name) }, [ _(child.title) ])
+				E('a', { 'href': L.url(...segments, child.name) }, [ _(child.title) ])
 			]);
 
 			ul.appendChild(li);
@@ -344,7 +356,7 @@ return baseclass.extend({
 		container.style.display = '';
 
 		if (activeNode)
-			this.renderTabMenu(activeNode, `${url}/${activeNode.name}`, (level || 0) + 1);
+			this.renderTabMenu(activeNode, segments.concat(activeNode.name), (level || 0) + 1);
 
 		return ul;
 	},

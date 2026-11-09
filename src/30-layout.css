@@ -338,6 +338,10 @@
 	align-items: center;
 	gap: var(--space-6);
 	height: var(--topbar-height);
+	/* the structure layer pulls every <header> 5px outward to cancel
+	   bootstrap's body gutter; this shell has no gutter, so that offset
+	   would overhang the sidebar and create a page-wide scrollbar */
+	margin: 0;
 	padding: 0 max(var(--shell-gutter), calc((100% - var(--content-max)) / 2 + var(--shell-gutter)));
 	background: color-mix(in oklab, var(--background) 80%, transparent);
 	backdrop-filter: saturate(180%) blur(12px);

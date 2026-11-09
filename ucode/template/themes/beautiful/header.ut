@@ -13,7 +13,7 @@
 	const pagetitle = striptags(_(dispatched?.title ?? ''));
 
 	/* bump on every release so browsers pick up the new stylesheet */
-	const assetver = '574872e1';
+	const assetver = '66f062cf';
 
 	http.prepare_content('text/html; charset=UTF-8');
 -%}

@@ -304,6 +304,7 @@ rm -f /tmp/luci-indexcache* && /etc/init.d/uhttpd reload
 ## 开发
 
 ```sh
+npm run lint                  # 布局约束检查（见下）
 node tools/build.mjs          # src/*.css -> htdocs/luci-static/beautiful/cascade.css
 tools/package.sh              # dist/luci-theme-beautiful-<version>.tar.gz
 tools/deploy.sh <host> <pass> # 构建 + 推送到真机预览
@@ -312,6 +313,17 @@ tools/deploy.sh <host> <pass> # 构建 + 推送到真机预览
 `src/vendor/00-structure.css` 是未改动的 bootstrap 样式表（Apache-2.0），承载 LuCI 控件依赖的功能性规则；所有视觉样式都在它之上的编号分层里。
 
 构建会把内容哈希写进 `header.ut` 的 `assetver`，因此部署后浏览器会立刻取到新样式，无需手动清缓存。
+
+### 布局系统
+
+基础布局只定义一次，所有页面共用；组件不硬编码尺寸，页面不允许自带样式。
+
+- **`src/10-tokens.css`** 独占全部度量：`--space-*`、`--text-*`、`--control-h`、`--card-pad`、`--cell-pad-*`、`--field-cols`。响应式只切换令牌值，不再为每个组件重写一套断点规则。
+- **组件层**（`30` 外壳 / `40` 控件 / `50` 表面 / `60` LuCI 组件）只消费令牌。卡片标题栏出血、表格出血、底部操作条都由 `--card-pad` 推导，改一处 padding 即可全局生效。
+- **表单行**是一套两列网格：标签列 + 字段列，描述跨字段列。LuCI 的 `.cbi-value-description` 是 `.cbi-value-field` 的兄弟节点，因此必须显式指定列，不能交给自动排布。
+- **`npm run lint`** 在以下情况直接失败：出现 `[data-page="…"]` 页面级选择器、页面专属 `#id`、写死的字号，或模板里出现内联布局样式。
+
+需要调整某个页面时，改令牌或改组件，不要改页面。
 
 ## 目录结构
 

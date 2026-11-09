@@ -35,7 +35,7 @@
 	}
 
 	.topbar-title {
-		font-size: 0.9375rem;
+		font-size: var(--text-md);
 	}
 
 	.cbi-page-actions {

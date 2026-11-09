@@ -2758,6 +2758,7 @@ body[data-page='admin-status-overview'] .cbi-title .label.notice:hover {
 	--text-2xs: 0.6875rem;   /* 11px — badges, meta */
 	--text-xs: 0.75rem;      /* 12px — descriptions, table heads */
 	--text-sm: 0.8125rem;    /* 13px — body copy, controls */
+	--text-md: 0.9375rem;    /* 15px — chrome titles, modal titles */
 	--text-base: 0.875rem;   /* 14px — page copy */
 	--text-lg: 1rem;         /* 16px — card / top bar titles */
 	--text-xl: 1.25rem;      /* 20px — section titles */
@@ -3314,7 +3315,7 @@ select:focus-visible {
 }
 
 .brand-name {
-	font-size: 0.9375rem;
+	font-size: var(--text-md);
 	font-weight: 600;
 	letter-spacing: -0.015em;
 	overflow: hidden;
@@ -3567,6 +3568,10 @@ select:focus-visible {
 	align-items: center;
 	gap: var(--space-6);
 	height: var(--topbar-height);
+	/* the structure layer pulls every <header> 5px outward to cancel
+	   bootstrap's body gutter; this shell has no gutter, so that offset
+	   would overhang the sidebar and create a page-wide scrollbar */
+	margin: 0;
 	padding: 0 max(var(--shell-gutter), calc((100% - var(--content-max)) / 2 + var(--shell-gutter)));
 	background: color-mix(in oklab, var(--background) 80%, transparent);
 	backdrop-filter: saturate(180%) blur(12px);
@@ -5033,6 +5038,33 @@ input[type="radio"].cbi-input-invalid {
 	min-width: 6rem;
 }
 
+/* controls that live inside a cell fill the cell, so the column can size
+ * itself instead of carrying a fixed 13rem control inside a 5rem column */
+.table .td > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.table .td > select,
+.table .td > .cbi-select,
+.table .td > .cbi-dropdown:not(.btn):not(.cbi-button) {
+	width: 100%;
+	max-width: none;
+	min-width: 0;
+}
+
+.table .td .cbi-dynlist {
+	width: 100%;
+	max-width: none;
+	min-width: 0;
+}
+
+/* A table wider than its card scrolls inside the node instead of pushing
+ * the whole page sideways. Editable tables are excluded: a scroll
+ * container would clip an open dropdown menu. They stay fluid instead,
+ * because their in-cell controls no longer carry fixed widths.
+ */
+.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) {
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+}
+
 /* ------------------------------------------------------------------
  * Phones — a wide table scrolls instead of compressing
  *
@@ -5063,11 +5095,6 @@ input[type="radio"].cbi-input-invalid {
 	.cbi-section > .table .th:last-child,
 	.cbi-section > .table .td:last-child {
 		padding-right: var(--cell-pad-x);
-	}
-
-	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) {
-		overflow-x: auto;
-		overscroll-behavior-x: contain;
 	}
 
 	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) > .table {
@@ -5423,7 +5450,7 @@ a.label:hover {
 }
 
 .modal > h4 {
-	font-size: 0.9375rem;
+	font-size: var(--text-md);
 	font-weight: 600;
 	letter-spacing: -0.015em;
 	margin: 0 0 var(--space-4);
@@ -5495,7 +5522,11 @@ a.label:hover {
 .cbi-dropdown:not(.btn):not(.cbi-button) {
 	padding: 0 !important;
 	align-items: center;
+	/* multi-value dropdowns wrap their tags, so the height must be a
+	   minimum rather than a fixed control height */
+	height: auto;
 	min-height: var(--control-h);
+	line-height: var(--leading-snug);
 }
 
 .cbi-dropdown:not(.btn):not(.cbi-button) > ul > li {
@@ -6322,7 +6353,7 @@ footer ul.breadcrumb {
 }
 
 .auth-brand-name {
-	font-size: 0.9375rem;
+	font-size: var(--text-md);
 	font-weight: 600;
 	letter-spacing: -0.01em;
 	line-height: 1.2;
@@ -6345,7 +6376,7 @@ footer ul.breadcrumb {
 }
 
 .auth-head h1 {
-	font-size: 1.1875rem;
+	font-size: var(--text-xl);
 	font-weight: 600;
 	letter-spacing: -0.02em;
 	margin: 0 0 var(--space-1);

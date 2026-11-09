@@ -510,6 +510,33 @@
 	min-width: 6rem;
 }
 
+/* controls that live inside a cell fill the cell, so the column can size
+ * itself instead of carrying a fixed 13rem control inside a 5rem column */
+.table .td > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.table .td > select,
+.table .td > .cbi-select,
+.table .td > .cbi-dropdown:not(.btn):not(.cbi-button) {
+	width: 100%;
+	max-width: none;
+	min-width: 0;
+}
+
+.table .td .cbi-dynlist {
+	width: 100%;
+	max-width: none;
+	min-width: 0;
+}
+
+/* A table wider than its card scrolls inside the node instead of pushing
+ * the whole page sideways. Editable tables are excluded: a scroll
+ * container would clip an open dropdown menu. They stay fluid instead,
+ * because their in-cell controls no longer carry fixed widths.
+ */
+.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) {
+	overflow-x: auto;
+	overscroll-behavior-x: contain;
+}
+
 /* ------------------------------------------------------------------
  * Phones — a wide table scrolls instead of compressing
  *
@@ -540,11 +567,6 @@
 	.cbi-section > .table .th:last-child,
 	.cbi-section > .table .td:last-child {
 		padding-right: var(--cell-pad-x);
-	}
-
-	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) {
-		overflow-x: auto;
-		overscroll-behavior-x: contain;
 	}
 
 	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) > .table {
@@ -976,6 +998,7 @@ a.label:hover {
 	   minimum rather than a fixed control height */
 	height: auto;
 	min-height: var(--control-h);
+	line-height: var(--leading-snug);
 }
 
 .cbi-dropdown:not(.btn):not(.cbi-button) > ul > li {
