@@ -49,13 +49,59 @@ const ICONS = {
 	time: '<circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 1.75"/>',
 	language: '<path d="M4 6h9M8.5 4v2c0 4-2 7-4.5 8"/><path d="M6 12c1.5 4 4.5 6 8 7"/><path d="m13 20 4.5-10L22 20"/><path d="M15 16h5"/>',
 	theme: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-	_default: '<circle cx="12" cy="12" r="3.25" fill="currentColor" stroke="none"/>'
+
+	/* routing table (the JSON variant shares the same glyph) */
+	routesj: '<circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><path d="M9 19h7.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H15"/>',
+	iptables: '<path d="M4 6h16M4 11h16M4 16h10"/><path d="M17.5 18.5 21 15"/>',
+
+	/* wireless survey */
+	channel_analysis: '<path d="M4 20V13M9.3 20V8M14.6 20v-9M20 20V4"/>',
+
+	/* package manager / software */
+	'package-manager': '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+
+	crontab: '<rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10.5h18"/><path d="M12 14v2.4l1.6 1"/>',
+
+	attendedsysupgrade: '<path d="M6.5 18a4.5 4.5 0 0 1-.4-9 6 6 0 0 1 11.3-1.4A3.8 3.8 0 0 1 18 18"/><path d="M12 21v-7"/><path d="m9 17 3-3 3 3"/>',
+	'argon-config': '<path d="M12 3.2a8.8 8.8 0 1 0 0 17.6h1.6a2.4 2.4 0 0 0 0-4.8h-.7a1.9 1.9 0 0 1 0-3.8h4.4a3.2 3.2 0 0 0 3.2-3.2A8.2 8.2 0 0 0 12 3.2Z"/><circle cx="8.2" cy="9.2" r="1.15" fill="currentColor" stroke="none"/><circle cx="8.2" cy="14" r="1.15" fill="currentColor" stroke="none"/>',
+
+	ttyd: '<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="m7.5 9.5 3 3-3 3"/><path d="M13 15.5h3.5"/>',
+	openclash: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/>',
+	mihomo: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18"/>',
+	vpn: '<rect x="4" y="10.5" width="16" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/><path d="M12 15v2"/>',
+
+	/* generic module — used when a plugin has no dedicated glyph */
+	_default: '<rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="2.4" fill="currentColor" stroke="none"/>'
 };
+
+/**
+ * Resolve a glyph for a menu node. Plugins are named freely, so fall back
+ * through a few normalisations before giving up on the generic module mark.
+ */
+function iconFor(name) {
+	if (!name)
+		return ICONS._default;
+
+	if (ICONS[name])
+		return ICONS[name];
+
+	const trimmed = String(name).replace(/j$/, '');
+
+	if (ICONS[trimmed])
+		return ICONS[trimmed];
+
+	const head = String(name).split(/[-_.]/)[0];
+
+	if (ICONS[head])
+		return ICONS[head];
+
+	return ICONS._default;
+}
 
 function navIcon(name) {
 	const span = E('span', { 'class': 'nav-icon', 'aria-hidden': 'true' });
 	span.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
-		stroke-linecap="round" stroke-linejoin="round" focusable="false">${ICONS[name] ?? ICONS._default}</svg>`;
+		stroke-linecap="round" stroke-linejoin="round" focusable="false">${iconFor(name)}</svg>`;
 	return span;
 }
 

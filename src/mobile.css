@@ -2,106 +2,45 @@
  * luci-theme-beautiful — phone refinements
  * Loaded through <link media="only screen and (max-device-width: 854px)">
  * in addition to cascade.css.
+ *
+ * Component metrics already collapse through the token layer; this file
+ * only covers shell density and the modal / auth cards that sit outside
+ * the content column.
  */
 
 @media screen and (max-device-width: 854px), screen and (max-width: 640px) {
-	body {
-		font-size: 0.9375rem;
-	}
-
 	.app-topbar {
 		height: 3.375rem;
-		padding: 0 var(--shell-gutter);
-		gap: 0.5rem;
+		gap: var(--space-3);
 	}
 
+	/* the uptime / load chips are noise on a phone — the title needs the room */
+	#indicators {
+		display: none;
+	}
+
+	/* one ancestor crumb is enough next to a heading; the heading names the page */
 	.breadcrumb {
-		font-size: 0.6875rem;
+		font-size: var(--text-2xs);
 		overflow: hidden;
 	}
 
-	.breadcrumb li {
-		overflow: hidden;
-		text-overflow: ellipsis;
+	.breadcrumb li:not(:nth-last-child(2)),
+	.breadcrumb li.active {
+		display: none;
+	}
+
+	.breadcrumb li:not(:last-child)::after {
+		display: none;
 	}
 
 	.topbar-title {
-		font-size: 0.9375rem;
-	}
-
-	.app-main-inner {
-		padding: 1rem 0.75rem 3rem;
-	}
-
-	.cbi-section {
-		padding: 0.875rem;
-		border-radius: var(--radius-lg);
-	}
-
-	.cbi-section > h3 {
-		margin: -0.875rem -0.875rem 0.75rem;
-		padding: 0.6875rem 0.875rem;
-		border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-		font-size: 0.8125rem;
-	}
-
-	.cbi-value {
-		padding: 0.6875rem 0;
-	}
-
-	.cbi-value label.cbi-value-title,
-	.cbi-value > .cbi-value-title {
-		font-size: 0.8125rem;
-	}
-
-	input[type="text"],
-	input[type="password"],
-	input[type="number"],
-	input[type="email"],
-	input[type="url"],
-	input[type="search"],
-	input:not([type]),
-	select,
-	textarea,
-	.cbi-select,
-	.cbi-dropdown:not(.btn):not(.cbi-button) {
-		width: 100%;
-		max-width: none;
-		height: 2.5rem;
-		font-size: 1rem;      /* avoids iOS zoom-on-focus */
-	}
-
-	.cbi-select select {
-		font-size: 1rem;
-		line-height: 2.5rem;
-	}
-
-	textarea {
-		min-height: 6rem;
-		line-height: 1.5;
-	}
-
-	.btn,
-	.cbi-button {
-		height: 2.5rem;
-		padding: 0 1rem;
-	}
-
-	.td .cbi-button,
-	.th .cbi-button {
-		height: 2.125rem;
+		font-size: var(--text-md);
 	}
 
 	.cbi-page-actions {
 		flex-wrap: wrap;
 		justify-content: stretch;
-		gap: 0.5rem;
-	}
-
-	.cbi-page-actions .secondary-action {
-		margin-right: 0;
-		flex-basis: 100%;
-		text-align: left;
 	}
 
 	.cbi-page-actions > form {
@@ -109,25 +48,9 @@
 		flex: 1 1 auto;
 	}
 
-	.cbi-page-actions > .cbi-button,
-	.cbi-page-actions > form > .cbi-button,
-	.cbi-page-actions > .cbi-dropdown {
-		flex: 1 1 8rem;
-		width: auto;
-	}
-
-	.table {
-		font-size: 0.8125rem;
-	}
-
-	.table .th,
-	.table .td {
-		padding: 0.5625rem 0.5rem;
-	}
-
 	.modal {
-		margin: 4vh auto 2rem;
-		padding: 1rem;
+		margin: 4vh auto var(--space-10);
+		padding: var(--space-7);
 	}
 
 	.auth-card {

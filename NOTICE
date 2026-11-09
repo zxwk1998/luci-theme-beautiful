@@ -1,0 +1,33 @@
+luci-theme-beautiful
+Copyright 2026 vuejs-core.cn (https://vuejs-core.cn)
+
+This product is licensed under the Apache License, Version 2.0.
+See the LICENSE file for the full licence text.
+
+--------------------------------------------------------------------------
+Third-party notices
+--------------------------------------------------------------------------
+
+1. luci-theme-bootstrap (structure layer)
+   Copyright 2008-2022 The LuCI team
+   https://github.com/openwrt/luci
+   Licensed under the Apache License, Version 2.0.
+
+   src/vendor/00-structure.css is an unmodified copy of the
+   luci-theme-bootstrap stylesheet. It carries the functional rules that
+   LuCI widgets depend on (dropdown visibility, table cell display, modal
+   mechanics). All visual styling is authored in the numbered layers of
+   src/ and shipped in htdocs/luci-static/beautiful/cascade.css.
+
+2. Icons
+   The navigation icon set in htdocs/luci-static/resources/menu-beautiful.js
+   consists of inline SVG paths drawn for this theme in the Lucide visual
+   style (24x24 grid, 1.5px stroke, round caps). No third-party icon font,
+   sprite or package is bundled, and no runtime request is made to any icon
+   CDN.
+
+3. OpenWrt / LuCI
+   https://openwrt.org  /  https://github.com/openwrt/luci
+   OpenWrt and LuCI are trademarks of their respective owners. This theme
+   is an independent, unofficial work and is not endorsed by the OpenWrt
+   project.

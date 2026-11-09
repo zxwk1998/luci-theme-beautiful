@@ -2666,6 +2666,11 @@ body[data-page='admin-status-overview'] .cbi-title .label.notice:hover {
  * so the whole theme can be re-skinned by overriding a handful of
  * custom properties (see README, "Customising").
  *
+ * Layout metrics live here as well: component layers must consume these
+ * tokens instead of hard-coding padding / font sizes, which keeps every
+ * page on one rhythm and makes the responsive variants a token swap
+ * rather than a set of per-component overrides.
+ *
  * Requires a browser with oklch support:
  *   Chrome/Edge 111+, Safari 15.4+, Firefox 113+.
  */
@@ -2749,6 +2754,77 @@ body[data-page='admin-status-overview'] .cbi-title .label.notice:hover {
 		"Geist Mono", ui-monospace, SFMono-Regular, "JetBrains Mono",
 		Menlo, Consolas, "Liberation Mono", monospace;
 
+	/* type scale — 1 step == 2px at 16px root */
+	--text-2xs: 0.6875rem;   /* 11px — badges, meta */
+	--text-xs: 0.75rem;      /* 12px — descriptions, table heads */
+	--text-sm: 0.8125rem;    /* 13px — body copy, controls */
+	--text-base: 0.875rem;   /* 14px — page copy */
+	--text-lg: 1rem;         /* 16px — card / top bar titles */
+	--text-xl: 1.25rem;      /* 20px — section titles */
+	--text-2xl: 1.5rem;      /* 24px — auth headline */
+
+	--leading-tight: 1.3;
+	--leading-snug: 1.4;
+	--leading-normal: 1.5;
+	--leading-relaxed: 1.6;
+
+	/* ------------------------------------------------------------------
+	 * Spacing — 4px base scale
+	 * ---------------------------------------------------------------- */
+	--space-1: 0.25rem;
+	--space-2: 0.375rem;
+	--space-3: 0.5rem;
+	--space-4: 0.625rem;
+	--space-5: 0.75rem;
+	--space-6: 0.875rem;
+	--space-7: 1rem;
+	--space-8: 1.25rem;
+	--space-9: 1.5rem;
+	--space-10: 2rem;
+	--space-11: 2.5rem;
+	--space-12: 3rem;
+
+	/* ------------------------------------------------------------------
+	 * Controls — one height for every button / input / select
+	 * ---------------------------------------------------------------- */
+	--control-h: 2.25rem;
+	--control-h-sm: 1.875rem;
+	--control-h-lg: 2.375rem;
+	--control-px: 0.6875rem;
+	--control-radius: var(--radius-md);
+	--control-min-w: 12rem;
+	--control-max-w: 26rem;
+	--control-number-w: 8rem;
+
+	/* ------------------------------------------------------------------
+	 * Form rows — label column, gutter, row rhythm
+	 * `--field-cols` is the whole grid template so a breakpoint can
+	 * collapse it to a single column without touching the component.
+	 * ---------------------------------------------------------------- */
+	--field-cols: 11.5rem minmax(0, 1fr);
+	--field-label-col: 1;
+	--field-field-col: 2;
+	--field-desc-col: 2;
+	--field-gap: 1.5rem;
+	--row-pad-y: 0.8125rem;
+	/* label baseline offset so a one-line title centres on a control */
+	--field-title-pad: calc((var(--control-h) - (var(--text-sm) * var(--leading-snug))) / 2);
+
+	/* ------------------------------------------------------------------
+	 * Surfaces — card padding drives header bleed, table bleed and the
+	 * sticky action bar, so those all scale together.
+	 * ---------------------------------------------------------------- */
+	--card-pad: 1.25rem;
+	--card-pad-nested: 1rem;
+	--card-header-pad-y: 0.875rem;
+	--card-radius: var(--radius-xl);
+	--stack-gap: 0.875rem;
+
+	/* tables */
+	--cell-pad-y: 0.6875rem;
+	--cell-pad-x: 0.75rem;
+	--cell-leading: var(--leading-normal);
+
 	/* ------------------------------------------------------------------
 	 * Layout metrics
 	 * ---------------------------------------------------------------- */
@@ -2818,10 +2894,45 @@ body[data-page='admin-status-overview'] .cbi-title .label.notice:hover {
 	color-scheme: dark;
 }
 
+/* ====================================================================
+ * Responsive metrics — the only place a breakpoint changes geometry.
+ * Components never restate these values; they inherit the swap.
+ * ================================================================== */
+@media screen and (max-width: 1023px) {
+	:root {
+		--shell-gutter: 0.875rem;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	:root {
+		--text-base: 0.9375rem;
+
+		--field-cols: minmax(0, 1fr);
+		--field-label-col: 1;
+		--field-field-col: 1;
+		--field-desc-col: 1;
+		--field-gap: 0;
+		--field-title-pad: 0;
+
+		--row-pad-y: 0.75rem;
+		--card-pad: 1rem;
+		--card-pad-nested: 1rem;
+		--card-header-pad-y: 0.75rem;
+		--card-radius: var(--radius-lg);
+
+		--cell-pad-y: 0.5625rem;
+		--cell-pad-x: 0.625rem;
+
+		--control-h: 2.5rem;
+		--control-max-w: none;
+	}
+}
+
 /* --------------------------------------------------------------------
  * LuCI compatibility layer
  *
- * luci-theme-bootstrap (kept in 00-vendor-base.css for widget parity)
+ * luci-theme-bootstrap (kept in 00-structure.css for widget parity)
  * consumes the historic --*-color-* variables. Remap them onto the
  * shadcn tokens so inherited widget rules follow the new palette
  * instead of the old blue/grey scheme.
@@ -2867,6 +2978,9 @@ body[data-page='admin-status-overview'] .cbi-title .label.notice:hover {
 /*!
  * luci-theme-beautiful — base layer
  * Document defaults, typography, focus handling, scrollbars.
+ *
+ * All type sizes and line heights come from the token layer; no literal
+ * rem values are declared here so a global scale change stays global.
  */
 
 html {
@@ -2884,8 +2998,8 @@ body {
 	background: var(--background);
 	color: var(--foreground);
 	font-family: var(--font-sans);
-	font-size: 0.875rem;
-	line-height: 1.5;
+	font-size: var(--text-base);
+	line-height: var(--leading-normal);
 	font-weight: 400;
 	overflow-y: auto;
 	-webkit-font-smoothing: antialiased;
@@ -2895,7 +3009,7 @@ body {
 }
 
 * {
-	scroll-margin-top: calc(var(--topbar-height) + 1rem);
+	scroll-margin-top: calc(var(--topbar-height) + var(--space-7));
 }
 
 ::selection {
@@ -2939,17 +3053,17 @@ h1, h2, h3, h4, h5, h6, legend {
 	color: var(--foreground);
 	font-weight: 600;
 	letter-spacing: -0.011em;
-	line-height: 1.3;
+	line-height: var(--leading-tight);
 	margin: 0;
 }
 
-h1 { font-size: 1.5rem; letter-spacing: -0.025em; }
-h2 { font-size: 1.25rem; letter-spacing: -0.02em; }
-h3 { font-size: 0.9375rem; }
-h4 { font-size: 0.875rem; }
-h5 { font-size: 0.8125rem; }
+h1 { font-size: var(--text-2xl); letter-spacing: -0.025em; }
+h2 { font-size: var(--text-xl); letter-spacing: -0.02em; }
+h3 { font-size: var(--text-base); }
+h4 { font-size: var(--text-base); }
+h5 { font-size: var(--text-sm); }
 h6 {
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
 	font-weight: 500;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
@@ -2957,17 +3071,17 @@ h6 {
 }
 
 h1 small, h2 small, h3 small, h4 small, h5 small, h6 small {
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 400;
 	color: var(--muted-foreground);
-	margin-left: 0.5rem;
+	margin-left: var(--space-3);
 	letter-spacing: 0;
 }
 
 p {
-	font-size: 0.875rem;
+	font-size: var(--text-base);
 	line-height: 1.55;
-	margin-bottom: 0.75rem;
+	margin: 0 0 var(--space-5);
 }
 
 p:last-child {
@@ -2976,8 +3090,9 @@ p:last-child {
 
 p small,
 small {
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	color: var(--muted-foreground);
+	line-height: var(--leading-normal);
 }
 
 strong, b {
@@ -2985,7 +3100,7 @@ strong, b {
 }
 
 hr {
-	margin: 1.25rem 0;
+	margin: var(--space-8) 0;
 	border: 0;
 	border-bottom: 1px solid var(--border);
 }
@@ -2993,11 +3108,13 @@ hr {
 dl dt {
 	font-weight: 500;
 	color: var(--foreground);
+	line-height: var(--leading-snug);
 }
 
 dl dd {
 	color: var(--muted-foreground);
-	margin-left: 0.75rem;
+	margin-left: var(--space-5);
+	line-height: var(--leading-normal);
 }
 
 li {
@@ -3047,13 +3164,17 @@ pre {
 	color: var(--foreground);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
-	padding: 0.875rem 1rem;
-	font-size: 0.8125rem;
-	line-height: 1.6;
-	margin: 0 0 1rem;
+	padding: var(--space-6) var(--space-7);
+	font-size: var(--text-xs);
+	line-height: var(--leading-relaxed);
+	margin: 0 0 var(--space-7);
 	overflow: auto;
 	font-family: var(--font-mono);
 	box-shadow: none;
+	/* log panes and config previews share one scroll contract */
+	max-height: 60vh;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
 }
 
 pre code {
@@ -3061,11 +3182,6 @@ pre code {
 	border: 0;
 	padding: 0;
 	font-size: inherit;
-}
-
-textarea {
-	font-family: var(--font-mono);
-	font-size: 0.8125rem;
 }
 
 /* ------------------------------------------------------------------
@@ -3086,7 +3202,9 @@ textarea:focus-visible,
 	box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 40%, transparent);
 }
 
-/* bootstrap forces a blue glow on every focused control — neutralise it */
+/* bootstrap repaints every hovered / focused control blue with
+ * !important, so this neutraliser has to answer in kind. Buttons keep a
+ * neutral hover border; the control layer owns their fill. */
 input:focus,
 textarea:focus,
 select:focus,
@@ -3112,6 +3230,10 @@ select:focus-visible {
 /*!
  * luci-theme-beautiful — application shell
  * Sidebar + sticky top bar + centred content column.
+ *
+ * Geometry is token-driven: gutters, paddings and control sizes come
+ * from 10-tokens.css so the phone variant only rearranges the shell,
+ * it does not restate component metrics.
  */
 
 .app {
@@ -3145,17 +3267,17 @@ select:focus-visible {
 .sidebar-brand-row {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	padding: 0.875rem 0.875rem 0.75rem;
+	gap: var(--space-3);
+	padding: var(--space-6) var(--space-6) var(--space-5);
 }
 
 .sidebar-brand {
 	display: flex;
 	align-items: center;
-	gap: 0.625rem;
+	gap: 0.6875rem;
 	min-width: 0;
 	flex: 1 1 auto;
-	padding: 0.25rem;
+	padding: 0.3125rem var(--space-2);
 	border-radius: var(--radius-md);
 	text-decoration: none;
 	color: var(--sidebar-foreground);
@@ -3173,15 +3295,15 @@ select:focus-visible {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: var(--radius-md);
+	border-radius: 0.5625rem;
 	background: var(--primary);
 	color: var(--primary-foreground);
 	box-shadow: var(--shadow-2xs);
 }
 
 .brand-logo > svg {
-	width: 1rem;
-	height: 1rem;
+	width: 1.0625rem;
+	height: 1.0625rem;
 }
 
 .brand-text {
@@ -3192,16 +3314,17 @@ select:focus-visible {
 }
 
 .brand-name {
-	font-size: 0.875rem;
+	font-size: 0.9375rem;
 	font-weight: 600;
-	letter-spacing: -0.01em;
+	letter-spacing: -0.015em;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .brand-desc {
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
+	letter-spacing: 0.01em;
 	color: var(--muted-foreground);
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -3212,23 +3335,23 @@ select:focus-visible {
 	flex: 1 1 auto;
 	overflow-y: auto;
 	overflow-x: hidden;
-	padding: 0.25rem 0.625rem 1rem;
+	padding: var(--space-1) var(--space-4) var(--space-7);
 	overscroll-behavior: contain;
 }
 
 .sidebar-footer {
 	flex: 0 0 auto;
 	border-top: 1px solid var(--sidebar-border);
-	padding: 0.625rem 0.75rem;
+	padding: var(--space-4) var(--space-5);
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: var(--space-3);
 }
 
 .sidebar-version {
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
 	color: var(--muted-foreground);
-	line-height: 1.4;
+	line-height: var(--leading-snug);
 }
 
 .sidebar-version a {
@@ -3244,11 +3367,11 @@ select:focus-visible {
 	padding: 0;
 	display: flex;
 	flex-direction: column;
-	gap: 0.25rem;
+	gap: var(--space-1);
 }
 
 .nav-group + .nav-group {
-	margin-top: 0.5rem;
+	margin-top: var(--space-4);
 }
 
 .nav-group-label {
@@ -3258,17 +3381,17 @@ select:focus-visible {
 	width: 100%;
 	display: flex;
 	align-items: center;
-	gap: 0.375rem;
-	padding: 0.375rem 0.5rem;
+	gap: var(--space-2);
+	padding: var(--space-2) var(--space-3);
 	border-radius: var(--radius-sm);
 	font-family: inherit;
-	font-size: 0.6875rem;
-	font-weight: 500;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
+	font-size: var(--text-2xs);
+	font-weight: 600;
+	letter-spacing: 0.02em;
 	color: var(--muted-foreground);
 	cursor: pointer;
 	text-align: left;
+	line-height: var(--leading-snug);
 	transition: color 120ms ease, background-color 120ms ease;
 }
 
@@ -3290,8 +3413,8 @@ select:focus-visible {
 }
 
 .nav-group-chevron {
-	width: 0.75rem;
-	height: 0.75rem;
+	width: var(--space-5);
+	height: var(--space-5);
 	flex: 0 0 auto;
 	opacity: 0.6;
 	transition: transform 160ms ease;
@@ -3303,7 +3426,7 @@ select:focus-visible {
 
 .nav-items {
 	list-style: none;
-	margin: 0.125rem 0 0;
+	margin: var(--space-1) 0 0;
 	padding: 0;
 	display: flex;
 	flex-direction: column;
@@ -3317,15 +3440,16 @@ select:focus-visible {
 .nav-link {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	height: 2.125rem;
-	padding: 0 0.5rem;
+	gap: var(--space-4);
+	height: 2.25rem;
+	padding: 0 0.5625rem;
 	border-radius: var(--radius-md);
 	color: var(--muted-foreground);
 	text-decoration: none;
-	font-size: 0.8125rem;
+	font-size: var(--text-base);
 	font-weight: 400;
 	line-height: 1;
+	letter-spacing: -0.005em;
 	transition: background-color 120ms ease, color 120ms ease;
 	position: relative;
 }
@@ -3350,12 +3474,12 @@ select:focus-visible {
 .nav-link.active::before {
 	content: "";
 	position: absolute;
-	left: -0.625rem;
+	left: 0;
 	top: 50%;
 	transform: translateY(-50%);
 	width: 2px;
-	height: 1.125rem;
-	border-radius: 0 2px 2px 0;
+	height: var(--space-7);
+	border-radius: 2px;
 	background: var(--primary);
 }
 
@@ -3364,16 +3488,17 @@ select:focus-visible {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 1rem;
-	height: 1rem;
+	width: 1.0625rem;
+	height: 1.0625rem;
 	color: currentColor;
 	opacity: 0.75;
 }
 
 .nav-icon > svg {
-	width: 1rem;
-	height: 1rem;
+	width: 1.0625rem;
+	height: 1.0625rem;
 	display: block;
+	stroke-width: 1.6;
 }
 
 .nav-link.active .nav-icon {
@@ -3395,16 +3520,16 @@ select:focus-visible {
 	padding: 0;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.25rem;
+	gap: var(--space-1);
 }
 
 .mode-menu > li > a {
 	display: inline-flex;
 	align-items: center;
 	height: 1.5rem;
-	padding: 0 0.5rem;
+	padding: 0 var(--space-3);
 	border-radius: var(--radius-sm);
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
 	font-weight: 500;
 	color: var(--muted-foreground);
 	background: var(--sidebar-accent);
@@ -3440,10 +3565,10 @@ select:focus-visible {
 	z-index: 40;
 	display: flex;
 	align-items: center;
-	gap: 0.75rem;
+	gap: var(--space-6);
 	height: var(--topbar-height);
 	padding: 0 max(var(--shell-gutter), calc((100% - var(--content-max)) / 2 + var(--shell-gutter)));
-	background: color-mix(in oklab, var(--background) 82%, transparent);
+	background: color-mix(in oklab, var(--background) 80%, transparent);
 	backdrop-filter: saturate(180%) blur(12px);
 	-webkit-backdrop-filter: saturate(180%) blur(12px);
 	border-bottom: 1px solid var(--border);
@@ -3454,29 +3579,32 @@ select:focus-visible {
 	min-width: 0;
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: var(--space-3);
 	overflow: hidden;
 }
 
 .topbar-titles {
+	flex: 1 1 auto;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	gap: 0.1875rem;
 	min-width: 0;
+	max-width: 100%;
 	line-height: 1.2;
 }
 
 .topbar-title {
-	font-size: 1rem;
+	max-width: 100%;
+	font-size: var(--text-lg);
 	font-weight: 600;
-	letter-spacing: -0.021em;
+	letter-spacing: -0.022em;
 	color: var(--foreground);
 	margin: 0;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	line-height: 1.3;
+	line-height: var(--leading-tight);
 }
 
 .topbar-title:empty {
@@ -3491,7 +3619,7 @@ select:focus-visible {
 	flex: 0 0 auto;
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
+	gap: var(--space-3);
 }
 
 /* breadcrumb -------------------------------------------------------
@@ -3508,9 +3636,16 @@ select:focus-visible {
 	align-items: center;
 	gap: 0.125rem;
 	min-width: 0;
+	max-width: 100%;
+	overflow: hidden;
 	float: none;
-	font-size: 0.75rem;
-	line-height: 1.3;
+	flex: 0 1 auto;
+	/* neutralise the legacy luci bar treatment (gradient box, border, radius) */
+	background: none;
+	border: 0;
+	border-radius: 0;
+	font-size: var(--text-xs);
+	line-height: var(--leading-tight);
 	letter-spacing: 0.003em;
 	color: var(--muted-foreground);
 }
@@ -3519,6 +3654,7 @@ select:focus-visible {
 	display: inline-flex;
 	align-items: center;
 	gap: 0.125rem;
+	flex: 0 0 auto;
 	min-width: 0;
 	white-space: nowrap;
 	color: inherit;
@@ -3529,8 +3665,8 @@ select:focus-visible {
 	content: "";
 	order: 2;
 	flex: 0 0 auto;
-	width: 0.75rem;
-	height: 0.75rem;
+	width: var(--space-5);
+	height: var(--space-5);
 	background-color: currentColor;
 	opacity: 0.4;
 	-webkit-mask: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="%23000" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"%3E%3Cpath d="m9 18 6-6-6-6"/%3E%3C/svg%3E') center / 0.625rem 0.625rem no-repeat;
@@ -3539,7 +3675,7 @@ select:focus-visible {
 
 .breadcrumb li > a {
 	display: inline-block;
-	max-width: 16rem;
+	max-width: 12rem;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	color: inherit;
@@ -3554,6 +3690,10 @@ select:focus-visible {
 	color: var(--foreground);
 	background: var(--muted);
 	text-decoration: none;
+}
+
+.breadcrumb li > a:active {
+	background: var(--border);
 }
 
 .breadcrumb li.active {
@@ -3579,22 +3719,24 @@ select:focus-visible {
 	width: 100%;
 	max-width: var(--content-max);
 	margin: 0 auto;
-	padding: 1.5rem 1.5rem 3.5rem;
+	padding: var(--space-9) var(--shell-gutter) var(--space-11);
 }
 
 .app-footer {
 	border-top: 1px solid var(--border);
 	color: var(--muted-foreground);
-	font-size: 0.75rem;
-	padding: 0.875rem 1.5rem;
+	font-size: var(--text-2xs);
+	letter-spacing: 0.005em;
+	padding: var(--space-7) 1.75rem;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 1rem;
+	gap: var(--space-7);
 	flex-wrap: wrap;
 	float: none;
 	height: auto;
 	margin: 0;
+	line-height: var(--leading-relaxed);
 }
 
 .app-footer a {
@@ -3606,6 +3748,10 @@ select:focus-visible {
 	color: var(--foreground);
 }
 
+.app-footer .footer-meta {
+	opacity: 0.75;
+}
+
 /* ==================================================================
  * Buttons — icon buttons used by the shell
  * ================================================================ */
@@ -3614,8 +3760,8 @@ select:focus-visible {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 2rem;
-	height: 2rem;
+	width: 2.125rem;
+	height: 2.125rem;
 	padding: 0;
 	border: 1px solid transparent;
 	border-radius: var(--radius-md);
@@ -3676,12 +3822,11 @@ select:focus-visible {
 
 /* ==================================================================
  * Responsive — collapse the sidebar into an off-canvas sheet
+ *
+ * Only the shell moves here. Content metrics are switched once in the
+ * token layer, so no component is re-specified per breakpoint.
  * ================================================================ */
 @media screen and (max-width: 1023px) {
-	:root {
-		--shell-gutter: 0.875rem;
-	}
-
 	.app-sidebar {
 		position: fixed;
 		top: 0;
@@ -3705,24 +3850,19 @@ select:focus-visible {
 	}
 
 	.app-topbar {
-		padding: 0 0.875rem;
-	}
-
-	.app-main-inner {
-		padding: 1.125rem 0.875rem 3rem;
-	}
-
-	.app-footer {
-		padding: 0.875rem;
+		padding: 0 var(--shell-gutter);
 	}
 }
 
-@media screen and (max-width: 480px) {
-	.breadcrumb {
-		font-size: 0.75rem;
+@media screen and (max-width: 640px) {
+	.app-footer {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: var(--space-1);
+		padding: var(--space-6) var(--space-7);
 	}
 
-	.breadcrumb li:not(:last-child):not(:nth-last-child(2)) {
+	.app-footer .footer-meta {
 		display: none;
 	}
 }
@@ -3736,6 +3876,9 @@ body.sidebar-open {
  * luci-theme-beautiful — form controls
  * shadcn/ui Button / Input / Checkbox / Select primitives mapped onto
  * the LuCI class vocabulary (.btn, .cbi-button, .cbi-select, ...).
+ *
+ * Every control shares one height, one radius and one type size, all
+ * taken from the token layer. Variants only change colour.
  */
 
 /* ==================================================================
@@ -3752,18 +3895,19 @@ input[type="submit"] {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.375rem;
-	height: 2.25rem;
-	padding: 0 0.875rem;
+	gap: var(--space-2);
+	height: var(--control-h);
+	padding: 0 var(--space-6);
 	margin: 0;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
+	border-radius: var(--control-radius);
 	background: var(--background);
 	color: var(--foreground);
 	font-family: var(--font-sans);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 500;
 	line-height: 1;
+	letter-spacing: -0.005em;
 	white-space: nowrap;
 	cursor: pointer;
 	text-decoration: none;
@@ -3786,8 +3930,11 @@ input[type="submit"]:hover {
 }
 
 .btn:active,
-.cbi-button:active {
+.cbi-button:active,
+input[type="submit"]:active,
+input[type="button"]:active {
 	transform: translateY(0.5px);
+	filter: brightness(0.98);
 }
 
 .btn:focus-visible,
@@ -3815,7 +3962,9 @@ input[type="submit"][disabled] {
 .cbi-button-save,
 .cbi-button-apply,
 .cbi-button-action.important,
-.cbi-button.cbi-button-positive {
+.cbi-button.cbi-button-positive,
+.cbi-page-actions .cbi-button-apply,
+.cbi-page-actions .cbi-button-save {
 	background: var(--primary);
 	border-color: var(--primary);
 	color: var(--primary-foreground);
@@ -3826,7 +3975,9 @@ input[type="submit"][disabled] {
 .cbi-button-positive:hover,
 .cbi-button-save:hover,
 .cbi-button-apply:hover,
-.cbi-button-action.important:hover {
+.cbi-button-action.important:hover,
+.cbi-page-actions .cbi-button-apply:hover,
+.cbi-page-actions .cbi-button-save:hover {
 	background: color-mix(in oklab, var(--primary) 88%, var(--background));
 	border-color: color-mix(in oklab, var(--primary) 88%, var(--background));
 	color: var(--primary-foreground);
@@ -3860,7 +4011,7 @@ input[type="submit"][disabled] {
 	color: var(--destructive-foreground);
 }
 
-/* --- quiet / ghost ------------------------------------------------ */
+/* --- quiet / secondary -------------------------------------------- */
 .cbi-button-neutral,
 .cbi-button-reset,
 .cbi-button-edit,
@@ -3868,20 +4019,49 @@ input[type="submit"][disabled] {
 .cbi-button-add,
 .cbi-button-action,
 .btn.secondary {
-	background: transparent;
-	border-color: var(--border);
-	color: var(--foreground);
+	background: var(--secondary);
+	border-color: transparent;
+	color: var(--secondary-foreground);
 	box-shadow: none;
 }
 
 .cbi-button-neutral:hover,
-.cbi-button-reset:hover,
 .cbi-button-edit:hover,
 .cbi-button-down:hover,
 .cbi-button-add:hover,
 .cbi-button-action:hover {
+	background: color-mix(in oklab, var(--secondary) 78%, var(--foreground));
+	color: var(--secondary-foreground);
+}
+
+.cbi-button-reset {
+	background: transparent;
+	border-color: var(--border);
+}
+
+.cbi-button-reset:hover {
 	background: var(--accent);
 	color: var(--accent-foreground);
+}
+
+/* Table row actions keep the quiet treatment. luci-theme-bootstrap paints
+ * `.cbi-section-actions .cbi-button-edit` with a foreground gradient and
+ * flips --on-color to the light foreground; once the palette is remapped
+ * that renders black text on a black fill, so the surface is re-asserted
+ * at matching specificity. */
+.cbi-section-actions .cbi-button-edit,
+.cbi-section-actions .cbi-button-action {
+	background: var(--secondary);
+	border-color: transparent;
+	color: var(--secondary-foreground);
+	box-shadow: none;
+}
+
+.cbi-section-actions .cbi-button-edit:hover,
+.cbi-section-actions .cbi-button-action:hover {
+	background: color-mix(in oklab, var(--secondary) 78%, var(--foreground));
+	border-color: transparent;
+	color: var(--secondary-foreground);
 }
 
 /* empty submit/button inputs (form plumbing) must not render as buttons */
@@ -3893,16 +4073,16 @@ input[type="reset"][value=""] {
 
 /* --- sizing ------------------------------------------------------- */
 .btn.large {
-	height: 2.5rem;
-	padding: 0 1.125rem;
-	font-size: 0.875rem;
+	height: var(--control-h-lg);
+	padding: 0 var(--space-8);
+	font-size: var(--text-base);
 }
 
 .btn.small,
 .cbi-button.small {
-	height: 1.875rem;
-	padding: 0 0.625rem;
-	font-size: 0.75rem;
+	height: var(--control-h-sm);
+	padding: 0 var(--space-4);
+	font-size: var(--text-xs);
 }
 
 /* compact buttons inside tables and inline sections */
@@ -3910,16 +4090,16 @@ input[type="reset"][value=""] {
 .th .cbi-button,
 .cbi-section-actions .cbi-button,
 .cbi-dynlist .cbi-button {
-	height: 1.875rem;
-	padding: 0 0.625rem;
-	font-size: 0.75rem;
+	height: var(--control-h-sm);
+	padding: 0 var(--space-4);
+	font-size: var(--text-xs);
 	box-shadow: none;
 }
 
 /* square icon-only buttons (table row actions) */
 .td .cbi-button[title]:empty,
 .td .cbi-button.cbi-button-edit:empty {
-	width: 1.875rem;
+	width: var(--control-h-sm);
 	padding: 0;
 }
 
@@ -3928,9 +4108,9 @@ input[type="reset"][value=""] {
 	background: none;
 	border: 0;
 	color: inherit;
-	font-size: 1rem;
+	font-size: var(--text-lg);
 	line-height: 1;
-	padding: 0 0.25rem;
+	padding: 0 var(--space-1);
 	opacity: 0.6;
 }
 
@@ -3953,26 +4133,27 @@ select,
 .cbi-select,
 .cbi-dropdown:not(.btn):not(.cbi-button) {
 	display: inline-block;
-	width: 13.125rem;
+	width: var(--control-min-w);
 	max-width: 100%;
-	height: 2.25rem;
-	padding: 0 0.6875rem;
+	height: var(--control-h);
+	padding: 0 var(--control-px);
 	background: var(--background);
 	color: var(--foreground);
 	font-family: var(--font-sans);
-	font-size: 0.8125rem;
-	line-height: 2.25rem;
+	font-size: var(--text-sm);
+	line-height: var(--control-h);
 	border: 1px solid var(--input);
-	border-radius: var(--radius-md);
+	border-radius: var(--control-radius);
 	box-shadow: var(--shadow-2xs);
 	transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
 	vertical-align: middle;
+	letter-spacing: -0.003em;
 }
 
 textarea {
 	height: auto;
 	min-height: 5.5rem;
-	padding: 0.5rem 0.6875rem;
+	padding: var(--space-3) var(--control-px);
 	line-height: 1.55;
 	resize: vertical;
 }
@@ -4005,45 +4186,40 @@ select[disabled],
 	background: var(--muted);
 }
 
-/* widen inputs inside card forms */
-.cbi-value-field > input:not([type="checkbox"]):not([type="radio"]),
-.cbi-value-field > textarea,
-.cbi-value-field > select,
-.cbi-value-field > .cbi-select,
-.cbi-value-field > .cbi-dropdown:not(.btn):not(.cbi-button) {
-	width: 100%;
-	max-width: 26rem;
+/* native <select>: consistent caret across browsers */
+select:not([multiple]) {
+	appearance: none;
+	-webkit-appearance: none;
+	padding-right: 1.875rem;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right var(--space-3) center;
+	background-size: var(--space-7) var(--space-7);
 }
 
-.cbi-value-field > textarea {
-	max-width: 40rem;
-}
-
-@media screen and (min-width: 768px) {
-	#localtime {
-		width: 18.75rem;
-	}
+:root[data-darkmode="true"] select:not([multiple]) {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
 input[type="file"] {
 	width: auto !important;
 	height: auto;
-	padding: 0.375rem 0.5rem;
-	font-size: 0.8125rem;
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-sm);
 	background: var(--muted);
 	border-style: dashed;
-	line-height: 1.4;
+	line-height: var(--leading-snug);
 }
 
 input[type="file"]::file-selector-button {
-	margin-right: 0.625rem;
-	padding: 0.25rem 0.625rem;
+	margin-right: var(--space-4);
+	padding: var(--space-1) var(--space-4);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	background: var(--background);
 	color: var(--foreground);
 	font-family: inherit;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 	font-weight: 500;
 	cursor: pointer;
 }
@@ -4055,13 +4231,15 @@ input[type="file"]::file-selector-button:hover {
 select[multiple] {
 	height: auto;
 	min-height: 6rem;
-	padding: 0.375rem;
+	padding: var(--space-2);
 	background: var(--background);
+	line-height: var(--leading-normal);
 }
 
 select[multiple] option {
-	padding: 0.25rem 0.5rem;
+	padding: var(--space-1) var(--space-3);
 	border-radius: var(--radius-xs);
+	line-height: var(--leading-normal);
 }
 
 /* ==================================================================
@@ -4074,8 +4252,8 @@ input[type="radio"] {
 	appearance: none;
 	-webkit-appearance: none;
 	position: relative;
-	width: 1rem;
-	height: 1rem;
+	width: var(--space-7);
+	height: var(--space-7);
 	margin: 0;
 	padding: 0;
 	display: inline-block;
@@ -4086,6 +4264,7 @@ input[type="radio"] {
 	border-radius: 0.25rem;
 	box-shadow: var(--shadow-2xs);
 	transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+	flex: 0 0 auto;
 }
 
 input[type="radio"] {
@@ -4151,14 +4330,14 @@ input[type="radio"].cbi-input-invalid {
 	width: 100%;
 	height: 100%;
 	margin: 0;
-	padding: 0 2rem 0 0.6875rem;
+	padding: 0 var(--space-10) 0 var(--control-px);
 	border: 0;
 	outline: none;
 	background: transparent;
 	color: inherit;
 	font-family: inherit;
-	font-size: 0.8125rem;
-	line-height: 2.25rem;
+	font-size: var(--text-sm);
+	line-height: var(--control-h);
 	cursor: pointer;
 	box-shadow: none;
 }
@@ -4167,16 +4346,21 @@ input[type="radio"].cbi-input-invalid {
 	content: "";
 	position: absolute;
 	top: 50%;
-	right: 0.5rem;
-	width: 1rem;
-	height: 1rem;
-	margin-top: -0.5rem;
+	right: var(--space-3);
+	width: var(--space-7);
+	height: var(--space-7);
+	margin-top: calc(var(--space-7) / -2);
 	background: var(--muted-foreground);
 	-webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/1rem no-repeat;
 	mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/1rem no-repeat;
 	pointer-events: none;
 	border-radius: 0;
 	display: block;
+}
+
+.cbi-select:focus-within {
+	border-color: color-mix(in oklab, var(--ring) 85%, var(--foreground));
+	box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 32%, transparent);
 }
 
 .cbi-select.cbi-input-invalid {
@@ -4194,12 +4378,12 @@ input[type="radio"].cbi-input-invalid {
 .cbi-dynlist {
 	display: inline-flex;
 	flex-direction: column;
-	gap: 0.375rem;
+	gap: var(--space-2);
 	width: 100%;
-	max-width: 26rem;
-	min-width: 13.125rem;
+	max-width: var(--control-max-w);
+	min-width: var(--control-min-w);
 	height: auto;
-	min-height: 2.25rem;
+	min-height: var(--control-h);
 	padding: 0;
 	border: 0;
 	background: none;
@@ -4211,12 +4395,13 @@ input[type="radio"].cbi-input-invalid {
 	display: flex;
 	align-items: center;
 	min-height: 2.125rem;
-	padding: 0.375rem 2.25rem 0.375rem 0.625rem;
+	padding: var(--space-2) var(--control-h) var(--space-2) var(--space-4);
 	background: var(--muted);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	color: var(--foreground);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
 	box-shadow: none;
 	cursor: move;
 	word-break: break-all;
@@ -4255,7 +4440,7 @@ input[type="radio"].cbi-input-invalid {
 
 .cbi-dynlist > .add-item {
 	display: flex;
-	gap: 0.375rem;
+	gap: var(--space-2);
 }
 
 .cbi-dynlist > .add-item > input,
@@ -4268,25 +4453,29 @@ input[type="radio"].cbi-input-invalid {
 }
 
 /* ==================================================================
- * Page actions — sticky card footer
+ * Page actions — one sticky bar for every form page
+ *
+ * Horizontal bleed is derived from --card-pad so the bar stays flush
+ * with the card edges at every breakpoint.
  * ================================================================ */
 .actions,
 .cbi-page-actions {
 	position: sticky;
-	bottom: 0;
+	bottom: var(--space-5);
 	z-index: 20;
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
 	flex-wrap: wrap;
-	gap: 0.5rem;
-	margin: 0 -1.25rem -1.25rem;
-	padding: 0.875rem 1.25rem;
-	background: color-mix(in oklab, var(--card) 88%, transparent);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	border-top: 1px solid var(--border);
-	border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+	gap: var(--space-3);
+	margin: var(--space-3) 0 0;
+	padding: var(--space-4);
+	background: color-mix(in oklab, var(--card) 82%, transparent);
+	backdrop-filter: saturate(180%) blur(12px);
+	-webkit-backdrop-filter: saturate(180%) blur(12px);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-md);
 	text-align: right;
 }
 
@@ -4297,11 +4486,21 @@ input[type="radio"].cbi-input-invalid {
 .cbi-page-actions > * {
 	float: none;
 	margin: 0;
+	vertical-align: middle;
 }
 
 .cbi-page-actions > form {
 	display: inline-flex;
 	margin: 0;
+	gap: var(--space-3);
+}
+
+.cbi-page-actions > .cbi-button,
+.cbi-page-actions > form > .cbi-button,
+.cbi-page-actions > .cbi-dropdown.btn,
+.cbi-page-actions > .cbi-dropdown.cbi-button {
+	height: var(--control-h);
+	font-size: var(--text-sm);
 }
 
 .cbi-page-actions .secondary-action {
@@ -4311,8 +4510,8 @@ input[type="radio"].cbi-input-invalid {
 }
 
 .cbi-page-actions .secondary-action a {
-	font-size: 0.8125rem;
-	line-height: 2.25rem;
+	font-size: var(--text-sm);
+	line-height: var(--control-h);
 	color: var(--muted-foreground);
 	text-decoration: none;
 }
@@ -4326,6 +4525,13 @@ input[type="radio"].cbi-input-invalid {
  * luci-theme-beautiful — surfaces
  * Cards, form rows, tables, tabs, alerts, badges, modal, dropdown,
  * tooltip and progress primitives.
+ *
+ * One layout model per primitive:
+ *   · cards      — padding comes from --card-pad, and every bleed
+ *                  (header, table, divider) is derived from it
+ *   · form rows  — a two-column grid: label | field, description
+ *                  spanning the field column
+ *   · tables     — one cell rhythm, one leading, actions never collapse
  */
 
 /* ==================================================================
@@ -4334,12 +4540,13 @@ input[type="radio"].cbi-input-invalid {
 .cbi-map {
 	display: flex;
 	flex-direction: column;
-	gap: 1rem;
+	gap: var(--stack-gap);
 }
 
 /* the page title lives in the top bar, hide the duplicate in the content */
 .cbi-map > h2,
 .cbi-map > h2[name="content"],
+#view > h2:first-child,
 #view > h2[name="content"],
 .app-main-inner > h2[name="content"],
 .app-main-inner > h2:first-child {
@@ -4347,11 +4554,15 @@ input[type="radio"].cbi-input-invalid {
 }
 
 .cbi-map > h2 + .cbi-map-descr {
-	margin-top: -0.25rem;
+	margin-top: calc(var(--space-1) * -1);
+}
+
+.cbi-map > .cbi-map-descr {
+	margin-bottom: 0.125rem;
 }
 
 .cbi-map-descr {
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	line-height: 1.55;
 	color: var(--muted-foreground);
 	margin: 0;
@@ -4360,47 +4571,52 @@ input[type="radio"].cbi-input-invalid {
 
 /* ==================================================================
  * Cards — every .cbi-section becomes a shadcn Card
+ *
+ * --pad is local to the card, so a nested card bleeds by its own
+ * padding without a second set of selectors.
  * ================================================================ */
 .cbi-section {
+	--pad: var(--card-pad);
+
 	position: relative;
 	background: var(--card);
 	border: 1px solid var(--border);
-	border-radius: var(--radius-xl);
-	box-shadow: var(--shadow-xs);
-	padding: 1.25rem;
+	border-radius: var(--card-radius);
+	box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.04);
+	padding: var(--pad);
 	margin: 0;
 }
 
 .cbi-section > h3 {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	margin: -1.25rem -1.25rem 1rem;
-	padding: 0.875rem 1.25rem;
+	gap: var(--space-3);
+	margin: calc(var(--pad) * -1) calc(var(--pad) * -1) var(--space-7);
+	padding: var(--card-header-pad-y) var(--pad);
 	border-bottom: 1px solid var(--border);
-	font-size: 0.875rem;
+	font-size: var(--text-base);
 	font-weight: 600;
-	letter-spacing: -0.01em;
-	line-height: 1.4;
-	border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+	letter-spacing: -0.008em;
+	line-height: var(--leading-snug);
+	border-radius: var(--card-radius) var(--card-radius) 0 0;
 	background: transparent;
 }
 
 .cbi-section > h3 small {
 	font-weight: 400;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 	color: var(--muted-foreground);
 }
 
 .cbi-section > h3 + .cbi-section-descr {
-	margin-top: -0.5rem;
+	margin-top: calc(var(--space-3) * -1);
 }
 
 .cbi-section-descr {
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	line-height: 1.55;
 	color: var(--muted-foreground);
-	margin: 0 0 1rem;
+	margin: 0 0 var(--space-7);
 }
 
 .cbi-section-descr a {
@@ -4409,38 +4625,39 @@ input[type="radio"].cbi-input-invalid {
 
 .cbi-section-node {
 	display: block;
+	min-width: 0;
 }
 
-/* nested sections keep a lighter surface */
+/* nested sections keep a lighter surface and a lighter rhythm */
 .cbi-section .cbi-section {
+	--pad: var(--card-pad-nested);
+
 	background: color-mix(in oklab, var(--muted) 45%, var(--card));
 	box-shadow: none;
-	padding: 1rem;
+	padding: var(--pad);
 }
 
 .cbi-section .cbi-section > h3 {
-	margin: -1rem -1rem 0.875rem;
-	padding: 0.75rem 1rem;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 }
 
 .cbi-section > .cbi-section {
-	margin-top: 0.75rem;
+	margin-top: var(--space-5);
 }
 
 .cbi-section-remove {
 	float: none;
 	position: absolute;
-	top: 0.75rem;
-	right: 0.875rem;
+	top: var(--space-5);
+	right: var(--space-6);
 	margin: 0;
 	z-index: 2;
 }
 
 .cbi-section-remove > .cbi-button {
-	height: 1.75rem;
-	padding: 0 0.5rem;
-	font-size: 0.75rem;
+	height: var(--control-h-sm);
+	padding: 0 var(--space-3);
+	font-size: var(--text-xs);
 	border-color: transparent;
 	background: transparent;
 	color: var(--muted-foreground);
@@ -4457,9 +4674,9 @@ input[type="radio"].cbi-input-invalid {
 .cbi-section-create {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	margin: 0.875rem 0 0;
-	padding: 0.75rem 0 0;
+	gap: var(--space-3);
+	margin: var(--space-6) 0 0;
+	padding: var(--space-5) 0 0;
 	border-top: 1px dashed var(--border);
 }
 
@@ -4479,74 +4696,121 @@ input[type="radio"].cbi-input-invalid {
 }
 
 /* ==================================================================
- * Form rows
+ * Form rows — label | field, description under the field
  * ================================================================ */
 .cbi-value {
 	display: grid;
-	grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+	grid-template-columns: var(--field-cols);
+	column-gap: var(--field-gap);
+	row-gap: var(--space-2);
 	align-items: start;
-	gap: 0.25rem 1.25rem;
 	margin: 0;
-	padding: 0.875rem 0;
-	border-bottom: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+	padding: var(--row-pad-y) 0;
+	border-bottom: 1px solid color-mix(in oklab, var(--border) 55%, transparent);
 	flex-wrap: nowrap;
 }
 
 .cbi-value:last-child,
 .cbi-value-last {
 	border-bottom: 0;
-	padding-bottom: 0.25rem;
+	padding-bottom: var(--space-1);
 }
 
 .cbi-value:first-child {
-	padding-top: 0.25rem;
+	padding-top: var(--space-1);
 }
 
 .cbi-value label.cbi-value-title,
 .cbi-value > .cbi-value-title {
+	grid-column: var(--field-label-col);
 	flex: none;
-	padding-top: 0.4375rem;
+	padding-top: var(--field-title-pad);
 	text-align: left;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 500;
-	line-height: 1.4;
+	line-height: var(--leading-snug);
+	letter-spacing: -0.005em;
 	color: var(--foreground);
 	width: auto;
+	min-width: 0;
 }
 
 .cbi-value-title small {
 	display: block;
 	margin-top: 0.125rem;
 	font-weight: 400;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
+	line-height: var(--leading-normal);
 	color: var(--muted-foreground);
 }
 
 .cbi-value-field {
+	grid-column: var(--field-field-col);
 	margin-left: 0;
 	min-width: 0;
 	flex: none;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 0.5rem;
+	gap: var(--space-3);
 }
 
-.cbi-value-field > .cbi-input-text,
-.cbi-value-field > .cbi-input-password {
-	flex: 0 1 auto;
+/* inline controls share one row and grow up to the form column width */
+.cbi-value-field > input:not([type="checkbox"]):not([type="radio"]):not([type="number"]):not([type="file"]),
+.cbi-value-field > select,
+.cbi-value-field > .cbi-select,
+.cbi-value-field > .cbi-dropdown:not(.btn):not(.cbi-button) {
+	flex: 1 1 var(--control-min-w);
+	width: auto;
+	max-width: var(--control-max-w);
 }
 
-.cbi-value-field > *:only-child {
+.cbi-value-field > input[type="number"] {
+	flex: 0 0 var(--control-number-w);
+	width: var(--control-number-w);
+	max-width: var(--control-number-w);
+}
+
+.cbi-value-field > textarea {
+	flex: 1 1 100%;
+	width: 100%;
+	max-width: 40rem;
+}
+
+.cbi-value-field > .cbi-dynlist {
+	flex: 1 1 100%;
+	max-width: var(--control-max-w);
+}
+
+.cbi-value-field > .cbi-button,
+.cbi-value-field > form,
+.cbi-value-field > form > .cbi-button {
+	flex: 0 0 auto;
+}
+
+.cbi-value-field > * {
 	margin-right: 0;
 }
 
 .cbi-value-description {
-	flex-basis: 100%;
-	font-size: 0.75rem;
-	line-height: 1.5;
+	font-size: var(--text-xs);
+	line-height: 1.55;
+	letter-spacing: 0;
 	color: var(--muted-foreground);
-	margin: 0.3125rem 0 0;
+	margin: 0;
+	min-width: 0;
+	max-width: 60rem;
+}
+
+/* description authored as a sibling of the field (LuCI's default) */
+.cbi-value > .cbi-value-description {
+	grid-column: var(--field-desc-col) / -1;
+}
+
+/* description authored inside the field: own line, full field width */
+.cbi-value-field > .cbi-value-description {
+	flex: 1 1 100%;
+	margin: 0;
 }
 
 .cbi-value-description:not(:empty)::before {
@@ -4560,26 +4824,36 @@ input[type="radio"].cbi-input-invalid {
 }
 
 .cbi-value > .cbi-section {
-	margin-top: 0.25rem;
+	margin-top: var(--space-1);
 }
 
-/* checkbox rows sit closer together */
+/* checkbox / radio rows */
 .cbi-value-field > .cbi-checkbox,
 .cbi-value-field > div > .cbi-radio {
 	height: auto;
-	min-height: 2.25rem;
+	min-height: var(--control-h);
 	display: inline-flex;
 	align-items: center;
-	gap: 0.5rem;
-	font-size: 0.8125rem;
+	gap: var(--space-3);
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
+}
+
+.cbi-value-field:has(> div > .cbi-radio) > div {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-3) var(--space-6);
 }
 
 .cbi-radio {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.375rem;
+	gap: var(--space-2);
 	cursor: pointer;
-	margin-right: 1rem;
+	margin-right: 0;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
 }
 
 .cbi-value-error input,
@@ -4600,25 +4874,26 @@ input[type="radio"].cbi-input-invalid {
 	background: color-mix(in oklab, var(--destructive) 7%, var(--card));
 	border: 1px solid color-mix(in oklab, var(--destructive) 28%, var(--border));
 	border-radius: var(--radius-md);
-	padding: 0.625rem 0.875rem;
-	margin: 0.75rem 0;
+	padding: var(--space-4) var(--space-6);
+	margin: var(--space-5) 0;
 	color: var(--destructive);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
 }
 
 .cbi-section-error ul {
-	margin: 0.25rem 0 0 1rem;
+	margin: var(--space-1) 0 0 var(--space-7);
 }
 
 /* ==================================================================
- * Tables
+ * Tables — one rhythm for every list view
  * ================================================================ */
 .table {
 	display: table;
 	width: 100%;
 	margin: 0;
 	padding: 0;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	border-collapse: separate;
 	border-spacing: 0;
 	position: relative;
@@ -4633,23 +4908,26 @@ input[type="radio"].cbi-input-invalid {
 .table .td {
 	display: table-cell;
 	vertical-align: middle;
-	padding: 0.625rem 0.75rem;
-	line-height: 1.45;
+	padding: var(--cell-pad-y) var(--cell-pad-x);
+	line-height: var(--cell-leading);
 	text-align: left;
 	border-top: 0;
 	border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+	overflow-wrap: break-word;
+	hyphens: none;
+	text-wrap: pretty;
 }
 
 .table .th {
-	background: color-mix(in oklab, var(--muted) 70%, var(--card));
+	background: color-mix(in oklab, var(--muted) 60%, var(--card));
 	color: var(--muted-foreground);
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 	font-weight: 500;
-	letter-spacing: 0.01em;
+	letter-spacing: 0;
 	white-space: nowrap;
 	border-bottom: 1px solid var(--border);
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
+	padding-top: var(--space-3);
+	padding-bottom: var(--space-3);
 	vertical-align: middle;
 }
 
@@ -4666,75 +4944,82 @@ input[type="radio"].cbi-input-invalid {
 }
 
 .table .tr:hover .td {
-	background: color-mix(in oklab, var(--muted) 55%, transparent);
+	background: color-mix(in oklab, var(--muted) 45%, transparent);
 }
 
 .table .tr.cbi-section-table-titles:hover .td,
 .table .tr.cbi-section-table-titles:hover .th {
-	background: color-mix(in oklab, var(--muted) 70%, var(--card));
+	background: color-mix(in oklab, var(--muted) 60%, var(--card));
 }
 
-/* bleed tables to the card edges */
+/* bleed tables to the card edges — derived from the card's own padding */
 .cbi-section > .cbi-section-node > .table,
 .cbi-section > .table,
 .cbi-section-node > .cbi-tblsection > .table {
-	width: calc(100% + 2.5rem);
-	margin: 0 -1.25rem;
+	width: calc(100% + (var(--pad) * 2));
+	margin: 0 calc(var(--pad) * -1);
 }
 
 .cbi-section > .cbi-section-node > .table .th:first-child,
 .cbi-section > .cbi-section-node > .table .td:first-child,
 .cbi-section > .table .th:first-child,
 .cbi-section > .table .td:first-child {
-	padding-left: 1.25rem;
+	padding-left: var(--pad);
 }
 
 .cbi-section > .cbi-section-node > .table .th:last-child,
 .cbi-section > .cbi-section-node > .table .td:last-child,
 .cbi-section > .table .th:last-child,
 .cbi-section > .table .td:last-child {
-	padding-right: 1.25rem;
+	padding-right: var(--pad);
 }
 
+/* row actions never collapse — the cell keeps at least its content width */
 .table .td.cbi-section-actions,
 .table .th.cbi-section-actions {
 	text-align: right;
 	white-space: nowrap;
 	width: 1%;
+	min-width: max-content;
+	padding-left: var(--space-4);
 }
 
-.td.cbi-section-actions > *,
-.td.cbi-section-actions > * > form {
+.table .td.cbi-section-actions > *,
+.table .td.cbi-section-actions > * > form {
 	display: inline-flex;
 	margin: 0;
-	gap: 0.25rem;
+	gap: var(--space-1);
+	vertical-align: middle;
 }
 
-.tr.cbi-section-table-descr .th,
-.cbi-section-table-descr .th {
+.table .tr.cbi-section-table-descr .th,
+.table .cbi-section-table-descr .th {
 	font-weight: 400;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
+	line-height: var(--leading-normal);
 	color: var(--muted-foreground);
 	background: transparent;
 	border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
 	white-space: normal;
+	vertical-align: top;
 }
 
-.tr.placeholder {
+.table .tr.placeholder {
 	height: 5rem;
 }
 
-.tr.placeholder > .td {
+.table .tr.placeholder > .td {
 	position: static;
 	text-align: center;
 	color: var(--muted-foreground);
 	line-height: 5rem;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 }
 
 .cbi-value-field table td {
-	padding: 0.25rem 0.5rem 0.25rem 0;
+	padding: var(--space-1) var(--space-3) var(--space-1) 0;
 	border: 0;
+	font-size: var(--text-sm);
 }
 
 .table.valign-middle .td {
@@ -4748,6 +5033,55 @@ input[type="radio"].cbi-input-invalid {
 	min-width: 6rem;
 }
 
+/* ------------------------------------------------------------------
+ * Phones — a wide table scrolls instead of compressing
+ *
+ * Read-only tables keep their words intact (CJK must not break inside a
+ * term) and size to their content inside a scroll container. Tables with
+ * form controls are excluded: they must stay fluid so an open dropdown
+ * is not clipped by the scroll container.
+ * ---------------------------------------------------------------- */
+@media screen and (max-width: 767px) {
+	/* align tables with the card padding: a bleeding table cannot scroll
+	   cleanly inside the card */
+	.cbi-section > .cbi-section-node > .table,
+	.cbi-section > .table,
+	.cbi-section-node > .cbi-tblsection > .table {
+		width: 100%;
+		margin-inline: 0;
+	}
+
+	.cbi-section > .cbi-section-node > .table .th:first-child,
+	.cbi-section > .cbi-section-node > .table .td:first-child,
+	.cbi-section > .table .th:first-child,
+	.cbi-section > .table .td:first-child {
+		padding-left: var(--cell-pad-x);
+	}
+
+	.cbi-section > .cbi-section-node > .table .th:last-child,
+	.cbi-section > .cbi-section-node > .table .td:last-child,
+	.cbi-section > .table .th:last-child,
+	.cbi-section > .table .td:last-child {
+		padding-right: var(--cell-pad-x);
+	}
+
+	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) {
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+	}
+
+	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) > .table {
+		width: max-content;
+		min-width: 100%;
+	}
+
+	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) .td,
+	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) .th {
+		word-break: keep-all;
+		overflow-wrap: normal;
+	}
+}
+
 /* ==================================================================
  * Tabs
  * ================================================================ */
@@ -4757,8 +5091,8 @@ input[type="radio"].cbi-input-invalid {
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.125rem;
-	margin: 0 0 1rem;
-	padding: 0.25rem;
+	margin: 0 0 var(--space-7);
+	padding: 0.1875rem;
 	list-style: none;
 	background: var(--muted);
 	background-image: none;
@@ -4772,7 +5106,7 @@ input[type="radio"].cbi-input-invalid {
 	flex: 0 0 auto;
 	display: flex;
 	align-items: center;
-	height: 1.875rem;
+	height: var(--control-h-sm);
 	max-width: none;
 	margin: 0;
 	background: transparent;
@@ -4787,21 +5121,22 @@ input[type="radio"].cbi-input-invalid {
 	display: inline-flex;
 	align-items: center;
 	height: 100%;
-	padding: 0 0.75rem;
+	padding: 0 var(--control-px);
 	border-radius: inherit;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 500;
 	line-height: 1;
 	color: inherit;
 	text-decoration: none;
 	outline: none;
+	white-space: nowrap;
 }
 
 .tabs > li.active,
 .cbi-tabmenu > li.cbi-tab {
 	background: var(--background);
 	color: var(--foreground);
-	box-shadow: var(--shadow-2xs);
+	box-shadow: 0 1px 2px oklch(0 0 0 / 0.06), 0 0 0 1px color-mix(in oklab, var(--border) 80%, transparent);
 }
 
 .tabs > li:not(.active):hover,
@@ -4826,33 +5161,34 @@ input[type="radio"].cbi-input-invalid {
 
 .cbi-tab-disabled[data-errors]::after {
 	content: attr(data-errors);
-	margin-left: 0.375rem;
+	margin-left: var(--space-2);
 	min-width: 1.125rem;
 	height: 1.125rem;
-	padding: 0 0.25rem;
+	padding: 0 var(--space-1);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	background: var(--destructive);
 	color: var(--destructive-foreground);
 	border-radius: 999px;
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
 	font-weight: 600;
 }
 
 .cbi-tab-descr {
-	margin: -0.5rem 0 1rem;
-	font-size: 0.8125rem;
+	margin: calc(var(--space-3) * -1) 0 var(--space-7);
+	font-size: var(--text-sm);
+	line-height: 1.55;
 	color: var(--muted-foreground);
 }
 
 .cbi-tabmenu.map {
-	margin: 0 0 1rem;
+	margin: 0 0 var(--space-7);
 }
 
 .cbi-tabmenu.map > li {
 	height: 2.125rem;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 500;
 }
 
@@ -4866,7 +5202,7 @@ input[type="radio"].cbi-input-invalid {
 
 /* tabmenu host rendered by the theme menu script */
 .tabmenu-host {
-	margin-bottom: 1rem;
+	margin-bottom: var(--space-7);
 }
 
 .tabmenu-host:empty {
@@ -4879,29 +5215,30 @@ input[type="radio"].cbi-input-invalid {
 .alert-message {
 	position: relative;
 	display: block;
-	padding: 0.875rem 1rem;
-	margin: 0 0 1rem;
+	padding: var(--space-6) var(--space-7);
+	margin: 0 0 var(--space-7);
 	background: var(--card);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
 	color: var(--foreground);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	line-height: 1.55;
 	background-image: none;
 	box-shadow: var(--shadow-2xs);
 }
 
 .alert-message h4 {
-	font-size: 0.875rem;
+	font-size: var(--text-base);
 	font-weight: 600;
-	margin: 0 0 0.25rem;
+	margin: 0 0 var(--space-1);
 	color: inherit;
-	line-height: 1.4;
+	line-height: var(--leading-snug);
 }
 
 .alert-message p {
-	font-size: 0.8125rem;
-	margin: 0 0 0.5rem;
+	font-size: var(--text-sm);
+	line-height: 1.55;
+	margin: 0 0 var(--space-3);
 	color: color-mix(in oklab, currentColor 82%, transparent);
 }
 
@@ -4911,7 +5248,7 @@ input[type="radio"].cbi-input-invalid {
 
 .alert-message .right {
 	float: none;
-	margin-top: 0.75rem;
+	margin-top: var(--space-5);
 }
 
 .alert-message.warning {
@@ -4955,17 +5292,17 @@ input[type="radio"].cbi-input-invalid {
 .btn.label {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.25rem;
+	gap: var(--space-1);
 	height: 1.375rem;
 	padding: 0 0.4375rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
+	border-radius: 0.375rem;
 	background: var(--secondary);
 	color: var(--secondary-foreground);
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
 	font-weight: 500;
 	line-height: 1;
-	letter-spacing: 0.01em;
+	letter-spacing: 0;
 	text-decoration: none;
 	box-shadow: none;
 	vertical-align: middle;
@@ -4994,36 +5331,61 @@ a.label:hover {
 	text-decoration: none;
 }
 
+.cbi-section > h3 .label {
+	font-size: var(--text-2xs);
+	height: 1.5rem;
+	padding: 0 0.5625rem;
+}
+
+/* header indicators — quiet ghost chips */
+.header-indicators,
+#indicators {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
 .header-indicators .label,
 #indicators .label,
 #indicators > span {
 	display: inline-flex;
 	align-items: center;
-	height: 1.75rem;
-	padding: 0 0.5625rem;
+	gap: var(--space-2);
+	height: var(--control-h-sm);
+	padding: 0 var(--space-4);
+	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
-	font-size: 0.75rem;
+	background: transparent;
+	color: var(--muted-foreground);
+	font-size: var(--text-xs);
 	font-weight: 500;
 	line-height: 1;
-	border: 1px solid var(--border);
-	background: var(--muted);
-	color: var(--muted-foreground);
+	letter-spacing: 0;
 	text-decoration: none;
+	box-shadow: none;
 }
 
-#indicators > span[data-clickable] {
+#indicators > span[data-style="active"] {
+	background: var(--muted);
+	border-color: transparent;
+	color: var(--foreground);
+}
+
+#indicators .label.important {
+	background: var(--primary);
+	border-color: var(--primary);
+	color: var(--primary-foreground);
+}
+
+#indicators > span[data-clickable],
+#indicators .label[data-clickable] {
 	cursor: pointer;
 }
 
 #indicators > span[data-clickable]:hover {
 	background: var(--accent);
-	color: var(--accent-foreground);
-}
-
-#indicators > span[data-style="active"] {
-	background: color-mix(in oklab, var(--warning) 16%, var(--card));
-	border-color: color-mix(in oklab, var(--warning) 40%, var(--border));
-	color: color-mix(in oklab, var(--warning) 70%, var(--foreground));
+	border-color: var(--border);
+	color: var(--foreground);
 }
 
 #indicators:empty {
@@ -5037,7 +5399,7 @@ a.label:hover {
 	background: oklch(0 0 0 / 0.45);
 	backdrop-filter: blur(3px);
 	-webkit-backdrop-filter: blur(3px);
-	padding: 0 1rem;
+	padding: 0 var(--space-7);
 	border: 0;
 }
 
@@ -5045,8 +5407,8 @@ a.label:hover {
 	position: relative;
 	width: min(36rem, 100%);
 	max-width: 36rem;
-	margin: 8vh auto 4rem;
-	padding: 1.25rem;
+	margin: 8vh auto var(--space-10);
+	padding: 1.375rem;
 	background: var(--card);
 	color: var(--card-foreground);
 	border: 1px solid var(--border);
@@ -5061,30 +5423,30 @@ a.label:hover {
 }
 
 .modal > h4 {
-	font-size: 1rem;
+	font-size: 0.9375rem;
 	font-weight: 600;
 	letter-spacing: -0.015em;
-	margin: 0 0 0.75rem;
-	line-height: 1.4;
+	margin: 0 0 var(--space-4);
+	line-height: var(--leading-snug);
 }
 
 .modal > * {
 	line-height: 1.55;
-	margin-bottom: 0.75rem;
+	margin-bottom: var(--space-5);
 	max-width: 100%;
 }
 
 .modal > p {
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	color: var(--muted-foreground);
 }
 
 .modal > .button-row {
 	display: flex;
 	justify-content: flex-end;
-	gap: 0.5rem;
-	margin: 1rem 0 0;
-	padding: 0;
+	gap: var(--space-3);
+	margin: var(--space-7) 0 0;
+	padding: var(--space-1) 0 0;
 }
 
 .modal > .button-row > button,
@@ -5096,8 +5458,8 @@ a.label:hover {
 	float: none;
 	display: flex;
 	justify-content: flex-end;
-	gap: 0.5rem;
-	margin: 0.75rem 0 0;
+	gap: var(--space-3);
+	margin: var(--space-5) 0 0;
 }
 
 #modal_overlay > .modal.login {
@@ -5126,42 +5488,86 @@ a.label:hover {
 
 /* ==================================================================
  * Dropdown (shadcn Select)
+ *
+ * Box metrics (height, border, radius, fill) come from the control
+ * layer; this block only tunes the multi-select / preview layout.
  * ================================================================ */
 .cbi-dropdown:not(.btn):not(.cbi-button) {
-	background: var(--background);
-	border: 1px solid var(--input);
-	border-radius: var(--radius-md);
-	color: var(--foreground);
-	box-shadow: var(--shadow-2xs);
-	min-height: 2.25rem;
 	padding: 0 !important;
 	align-items: center;
+	min-height: var(--control-h);
 }
 
 .cbi-dropdown:not(.btn):not(.cbi-button) > ul > li {
-	padding: 0.25rem 0.6875rem;
+	padding: var(--space-1) var(--control-px);
 	color: inherit;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	min-width: 0;
+	line-height: var(--leading-snug);
 }
 
 .cbi-dropdown > .open,
 .cbi-dropdown > .more {
 	color: var(--muted-foreground);
-	padding: 0 0.5rem;
+	padding: 0 var(--space-3);
 	line-height: 1;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 }
 
 .cbi-dropdown > .open::before {
 	content: "⌄";
-	font-size: 0.875rem;
+	font-size: var(--text-base);
 	line-height: 1;
 }
 
 .cbi-dropdown.btn,
 .cbi-dropdown.cbi-button {
 	gap: 0.125rem;
+	height: var(--control-h);
+	min-height: var(--control-h);
+	align-items: center;
+	padding: 0 var(--space-1) 0 0 !important;
+	background: var(--primary);
+	border: 1px solid var(--primary);
+	color: var(--primary-foreground);
+	border-radius: var(--control-radius);
+	box-shadow: var(--shadow-2xs);
+}
+
+.cbi-dropdown.btn > ul,
+.cbi-dropdown.cbi-button > ul {
+	align-items: center;
+	height: 100%;
+}
+
+.cbi-dropdown.btn > ul > li,
+.cbi-dropdown.cbi-button > ul > li {
+	padding: 0 var(--space-5);
+	color: inherit;
+	font-size: var(--text-sm);
+	font-weight: 500;
+	line-height: 1;
+	min-height: 0;
+}
+
+.cbi-dropdown.btn > .open,
+.cbi-dropdown.cbi-button > .open {
+	border-left: 1px solid color-mix(in oklab, var(--primary-foreground) 25%, transparent);
+	margin-left: 0;
+	padding: 0 var(--space-3);
+	height: 100%;
+	color: inherit;
+}
+
+.cbi-dropdown.btn:hover,
+.cbi-dropdown.cbi-button:hover {
+	background: color-mix(in oklab, var(--primary) 88%, var(--background));
+	border-color: color-mix(in oklab, var(--primary) 88%, var(--background));
+}
+
+.cbi-dropdown.btn > ul.preview,
+.cbi-dropdown.cbi-button > ul.preview {
+	display: none;
 }
 
 .cbi-dropdown[open] {
@@ -5171,13 +5577,13 @@ a.label:hover {
 }
 
 .cbi-dropdown[open] > ul.dropdown {
-	top: calc(100% + 0.25rem);
+	top: calc(100% + var(--space-1));
 	background: var(--popover);
 	color: var(--popover-foreground);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
 	box-shadow: var(--shadow-md);
-	padding: 0.25rem;
+	padding: var(--space-1);
 	min-width: 100%;
 	max-width: 24rem;
 	z-index: 1100;
@@ -5186,11 +5592,12 @@ a.label:hover {
 .cbi-dropdown[open] > ul.dropdown > li {
 	display: flex !important;
 	align-items: center;
-	min-height: 1.875rem;
-	padding: 0.375rem 0.5rem;
+	min-height: var(--control-h-sm);
+	padding: var(--space-2) var(--space-3);
 	border: 0;
 	border-radius: var(--radius-sm);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
+	line-height: var(--leading-snug);
 	color: inherit;
 	cursor: pointer;
 }
@@ -5224,7 +5631,7 @@ a.label:hover {
 }
 
 .cbi-dropdown > ul > li > form > input[type="checkbox"] {
-	margin-right: 0.5rem;
+	margin-right: var(--space-3);
 }
 
 /* ==================================================================
@@ -5236,9 +5643,9 @@ a.label:hover {
 	border: 0;
 	border-radius: var(--radius-sm);
 	box-shadow: var(--shadow-md);
-	padding: 0.3125rem 0.5rem;
-	font-size: 0.75rem;
-	line-height: 1.4;
+	padding: 0.3125rem var(--space-3);
+	font-size: var(--text-xs);
+	line-height: var(--leading-snug);
 	white-space: pre-line;
 	max-width: 22rem;
 	z-index: 1200;
@@ -5285,34 +5692,35 @@ a.label:hover {
  * ================================================================ */
 .cbi-progressbar {
 	position: relative;
-	height: 0.5rem;
+	height: 0.375rem;
 	min-width: 8rem;
-	margin: 1.5rem 0 0.5rem;
+	margin: var(--space-9) 0 var(--space-3);
 	background: var(--muted);
 	border: 0;
 	border-radius: 999px;
-	box-shadow: inset 0 1px 1px oklch(0 0 0 / 0.06);
+	box-shadow: none;
 }
 
 .cbi-progressbar > div {
 	height: 100%;
-	background: var(--primary);
+	background: var(--foreground);
 	border-radius: 999px;
 	transition: width 240ms ease;
 }
 
 .cbi-progressbar::before {
-	top: -1.35rem;
-	font-size: 0.75rem;
-	color: var(--muted-foreground);
+	top: -1.25rem;
+	font-size: var(--text-2xs);
 	font-weight: 500;
+	letter-spacing: 0.01em;
+	color: var(--muted-foreground);
 }
 
 /* ==================================================================
  * Spinner
  * ================================================================ */
 #view > div.spinning:first-child {
-	margin: 3rem auto;
+	margin: var(--space-12) auto;
 	text-align: center;
 }
 
@@ -5320,13 +5728,13 @@ a.label:hover {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5rem;
+	gap: var(--space-3);
 	color: var(--muted-foreground);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	position: relative;
-	padding-left: 1.25rem;
+	padding-left: var(--space-8);
 	height: auto;
-	min-height: 1.5rem;
+	min-height: var(--space-9);
 	background: none;
 }
 
@@ -5335,9 +5743,9 @@ a.label:hover {
 	position: absolute;
 	left: 0;
 	top: 50%;
-	width: 0.875rem;
-	height: 0.875rem;
-	margin-top: -0.4375rem;
+	width: var(--space-6);
+	height: var(--space-6);
+	margin-top: calc(var(--space-6) / -2);
 	border: 2px solid color-mix(in oklab, var(--foreground) 20%, transparent);
 	border-top-color: var(--foreground);
 	border-radius: 50%;
@@ -5389,7 +5797,10 @@ a.label:hover {
 /* ===== src/60-luci.css ===== */
 /*!
  * luci-theme-beautiful — LuCI-specific widgets
- * Interface boxes, zone badges, UCI change lists, file browser, syslog.
+ * Interface boxes, zone badges, UCI change lists, file browser, logs.
+ *
+ * These rules describe components, never pages: nothing here keys off a
+ * route, a page id or a single view's element id.
  */
 
 /* ==================================================================
@@ -5399,30 +5810,30 @@ a.label:hover {
 	display: inline-flex;
 	flex-direction: column;
 	text-align: left;
-	white-space: nowrap;
 	min-width: 10rem;
-	margin: 0.375rem;
+	margin: var(--space-2);
 	background: var(--card);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-2xs);
-	line-height: 1.3;
+	line-height: var(--leading-tight);
 	overflow: hidden;
 	vertical-align: top;
 }
 
 .ifacebox .ifacebox-head {
-	padding: 0.375rem 0.625rem;
+	padding: var(--space-2) var(--space-4);
 	background: var(--muted);
 	color: var(--muted-foreground);
 	border-bottom: 1px solid var(--border);
 	border-radius: 0;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 	font-weight: 500;
 	text-shadow: none;
 	display: flex;
 	align-items: center;
-	gap: 0.375rem;
+	gap: var(--space-2);
+	min-width: 0;
 }
 
 .ifacebox .ifacebox-head.active {
@@ -5433,13 +5844,16 @@ a.label:hover {
 
 .ifacebox .ifacebox-head strong {
 	font-weight: 600;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .ifacebox .ifacebox-body {
-	padding: 0.625rem;
-	font-size: 0.75rem;
+	padding: var(--space-4);
+	font-size: var(--text-xs);
 	color: var(--muted-foreground);
-	line-height: 1.45;
+	line-height: var(--leading-normal);
+	min-width: 0;
 }
 
 .ifacebox .ifacebox-body strong,
@@ -5452,13 +5866,9 @@ a.label:hover {
 .ifacebox img {
 	width: 1.25rem;
 	height: 1.25rem;
+	max-width: none;
 	vertical-align: middle;
 	opacity: 0.8;
-}
-
-#cbi-network-interface .ifacebox img {
-	width: 1.5rem;
-	height: 1.5rem;
 }
 
 /* ==================================================================
@@ -5467,24 +5877,26 @@ a.label:hover {
 .ifacebadge {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.375rem;
+	gap: var(--space-2);
 	max-width: 100%;
-	padding: 0.1875rem 0.5rem;
+	padding: 0.1875rem var(--space-3);
 	background: var(--secondary);
 	color: var(--secondary-foreground);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
-	font-size: 0.75rem;
-	line-height: 1.4;
+	font-size: var(--text-xs);
+	line-height: var(--leading-snug);
 	white-space: nowrap;
 	text-shadow: none;
 	box-shadow: none;
 	cursor: default;
+	vertical-align: middle;
 }
 
 .ifacebadge img {
 	width: 1rem;
 	height: 1rem;
+	max-width: none;
 	vertical-align: middle;
 }
 
@@ -5497,9 +5909,9 @@ a.label:hover {
 
 .ifacebadge.large {
 	display: inline-flex;
-	padding: 0.375rem 0.625rem;
+	padding: var(--space-2) var(--space-4);
 	min-width: 13rem;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 }
 
 .ifacebadge > * {
@@ -5509,13 +5921,14 @@ a.label:hover {
 .zonebadge {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.25rem;
-	padding: 0.125rem 0.375rem;
+	gap: var(--space-1);
+	padding: 0.125rem var(--space-2);
 	border-radius: var(--radius-sm);
 	border: 1px solid var(--border);
 	background: var(--secondary);
 	color: var(--secondary-foreground);
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
+	line-height: var(--leading-snug);
 	white-space: nowrap;
 	text-shadow: none;
 }
@@ -5534,8 +5947,8 @@ a.label:hover {
 
 .zonebadge input {
 	width: 6em;
-	height: 1.75rem;
-	font-size: 0.75rem;
+	height: var(--control-h-sm);
+	font-size: var(--text-xs);
 }
 
 .zonebadge > .ifacebadge {
@@ -5547,12 +5960,12 @@ a.label:hover {
 	background: transparent;
 	color: var(--muted-foreground);
 	font-style: italic;
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
 }
 
 .zone-forwards {
 	align-items: center;
-	gap: 0.25rem;
+	gap: var(--space-1);
 }
 
 .zone-forwards > span {
@@ -5565,19 +5978,19 @@ a.label:hover {
 .network-status-table {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.375rem;
-	margin: -0.25rem;
+	gap: var(--space-2);
+	margin: calc(var(--space-1) * -1);
 }
 
 .network-status-table .ifacebox {
 	flex: 1 1 16rem;
-	margin: 0.25rem;
+	margin: var(--space-1);
 }
 
 .network-status-table .ifacebox-body {
 	display: flex;
 	flex-direction: column;
-	gap: 0.375rem;
+	gap: var(--space-2);
 	height: 100%;
 	text-align: left;
 }
@@ -5595,12 +6008,16 @@ a.label:hover {
 .network-status-table .ifacebox-body > div {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.25rem;
+	gap: var(--space-1);
 	margin: 0;
 }
 
-#dsl_status_table .ifacebox-body span > strong {
+/* label / value pairs inside an interface box share one column width */
+.network-status-table .ifacebox-body span > strong {
+	display: inline-block;
 	min-width: 35%;
+	color: var(--foreground);
+	font-weight: 500;
 }
 
 /* ==================================================================
@@ -5623,13 +6040,14 @@ div.cbi-value var.cbi-tooltip-container,
  * ================================================================ */
 .uci-change-list {
 	font-family: var(--font-mono);
-	font-size: 0.75rem;
-	line-height: 1.7;
+	font-size: var(--text-xs);
+	line-height: var(--leading-relaxed);
 	white-space: pre-wrap;
+	overflow-wrap: anywhere;
 	background: var(--muted);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
-	padding: 0.75rem;
+	padding: var(--space-5);
 	max-height: 50vh;
 	overflow: auto;
 }
@@ -5662,16 +6080,16 @@ div.cbi-value var.cbi-tooltip-container,
 .uci-change-legend {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 0.75rem;
-	font-size: 0.75rem;
+	gap: var(--space-5);
+	font-size: var(--text-xs);
 	color: var(--muted-foreground);
-	margin-top: 0.5rem;
+	margin-top: var(--space-3);
 }
 
 .uci-change-legend-label {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.375rem;
+	gap: var(--space-2);
 }
 
 .uci-change-legend-label > var {
@@ -5691,7 +6109,7 @@ div.cbi-value var.cbi-tooltip-container,
 	z-index: 1100;
 	top: 100%;
 	left: 0;
-	margin-top: 0.25rem;
+	margin-top: var(--space-1);
 	width: min(28rem, 90vw);
 	max-height: 22rem;
 	overflow: auto;
@@ -5701,8 +6119,8 @@ div.cbi-value var.cbi-tooltip-container,
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
 	box-shadow: var(--shadow-md);
-	padding: 0.5rem;
-	font-size: 0.8125rem;
+	padding: var(--space-3);
+	font-size: var(--text-sm);
 }
 
 .cbi-filebrowser.open {
@@ -5711,8 +6129,8 @@ div.cbi-value var.cbi-tooltip-container,
 
 .cbi-filebrowser > div {
 	display: flex;
-	gap: 0.375rem;
-	margin-bottom: 0.5rem;
+	gap: var(--space-2);
+	margin-bottom: var(--space-3);
 }
 
 .cbi-filebrowser > ul {
@@ -5725,10 +6143,11 @@ div.cbi-value var.cbi-tooltip-container,
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	gap: 0.5rem;
-	padding: 0.3125rem 0.5rem;
+	gap: var(--space-3);
+	padding: 0.3125rem var(--space-3);
 	border-radius: var(--radius-sm);
 	cursor: pointer;
+	line-height: var(--leading-normal);
 }
 
 .cbi-filebrowser > ul > li:hover {
@@ -5746,34 +6165,15 @@ div.cbi-value var.cbi-tooltip-container,
 .cbi-filebrowser > ul > li > div:last-child {
 	flex: 0 0 auto;
 	display: flex;
-	gap: 0.25rem;
+	gap: var(--space-1);
 }
 
 .cbi-filebrowser .upload {
 	display: flex;
-	gap: 0.375rem;
-	margin-top: 0.5rem;
-	padding-top: 0.5rem;
+	gap: var(--space-2);
+	margin-top: var(--space-3);
+	padding-top: var(--space-3);
 	border-top: 1px solid var(--border);
-}
-
-/* ==================================================================
- * Syslog / log views
- * ================================================================ */
-#syslog {
-	background: var(--muted);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
-	padding: 0.875rem 1rem;
-	font-family: var(--font-mono);
-	font-size: 0.75rem;
-	line-height: 1.65;
-	color: var(--foreground);
-	max-height: 60vh;
-	overflow: auto;
-	white-space: pre-wrap;
-	box-shadow: none;
-	margin: 0;
 }
 
 /* ==================================================================
@@ -5808,59 +6208,9 @@ form.inline {
 
 .control-group {
 	display: inline-flex;
-	gap: 0.5rem;
+	gap: var(--space-3);
 	align-items: center;
 	flex-wrap: wrap;
-}
-
-/* split save buttons (save + dropdown) behave like a single control */
-.cbi-dropdown.btn,
-.cbi-dropdown.cbi-button {
-	height: 2.25rem;
-	min-height: 2.25rem;
-	align-items: center;
-	padding: 0 0.25rem 0 0 !important;
-	background: var(--primary);
-	border: 1px solid var(--primary);
-	color: var(--primary-foreground);
-	border-radius: var(--radius-md);
-	box-shadow: var(--shadow-2xs);
-}
-
-.cbi-dropdown.btn > ul,
-.cbi-dropdown.cbi-button > ul {
-	align-items: center;
-	height: 100%;
-}
-
-.cbi-dropdown.btn > ul > li,
-.cbi-dropdown.cbi-button > ul > li {
-	padding: 0 0.75rem;
-	color: inherit;
-	font-size: 0.8125rem;
-	font-weight: 500;
-	line-height: 1;
-	min-height: 0;
-}
-
-.cbi-dropdown.btn > .open,
-.cbi-dropdown.cbi-button > .open {
-	border-left: 1px solid color-mix(in oklab, var(--primary-foreground) 25%, transparent);
-	margin-left: 0;
-	padding: 0 0.5rem;
-	height: 100%;
-	color: inherit;
-}
-
-.cbi-dropdown.btn:hover,
-.cbi-dropdown.cbi-button:hover {
-	background: color-mix(in oklab, var(--primary) 88%, var(--background));
-	border-color: color-mix(in oklab, var(--primary) 88%, var(--background));
-}
-
-.cbi-dropdown.btn > ul.preview,
-.cbi-dropdown.cbi-button > ul.preview {
-	display: none;
 }
 
 /* legacy <footer> element defaults from the structure layer */
@@ -5871,7 +6221,7 @@ footer {
 	border-top: 1px solid var(--border);
 	background: transparent;
 	color: var(--muted-foreground);
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 	height: auto;
 	box-shadow: none;
 }
@@ -5882,84 +6232,222 @@ footer ul.breadcrumb {
 }
 
 /* ==================================================================
- * Per-page tweaks
+ * Content images
+ *
+ * Only content images are fluid; widget icons keep the fixed metrics
+ * declared by their own component, otherwise a viewBox-less source can
+ * stretch an interface badge to its intrinsic height and inflate the
+ * whole table row. The icon rules therefore come last, at the same
+ * specificity, so they win by source order.
  * ================================================================ */
-[data-page="admin-status-overview"] .cbi-section-node,
-[data-page="admin-status-overview"] .cbi-map {
-	gap: 1rem;
-}
-
-[data-page="admin-statistics-graphs"] img {
-	border-radius: var(--radius-md);
-	border: 1px solid var(--border);
-	background: var(--card);
-}
-
-/* make sure legacy content images never overflow a card */
-.cbi-section img,
-#view img {
+.cbi-section img {
 	max-width: 100%;
 	height: auto;
+	border-radius: var(--radius-sm);
+}
+
+.ifacebox img,
+.ifacebadge img,
+.zonebadge img,
+.assoclist .ifacebadge > img {
+	width: 1.25rem;
+	height: 1.25rem;
+	max-width: none;
+	border-radius: var(--radius-sm);
+}
+
+.ifacebadge img {
+	width: 1rem;
+	height: 1rem;
 }
 
 /* ===== src/70-utilities.css ===== */
 /*!
- * luci-theme-beautiful — utilities, login page, responsive refinements
+ * luci-theme-beautiful — utilities, login page, print
+ *
+ * Responsive geometry is intentionally absent: breakpoints only swap
+ * tokens in 10-tokens.css, so no component is restated here.
  */
 
 /* ==================================================================
- * Single column form rows on narrow screens
+ * Login / authorization page
+ * ================================================================ */
+.auth-shell {
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-9);
+	padding: var(--space-10) var(--space-7);
+	background: var(--background);
+	background-image:
+		radial-gradient(circle at 15% 0%, color-mix(in oklab, var(--foreground) 7%, transparent), transparent 45%),
+		radial-gradient(circle at 85% 100%, color-mix(in oklab, var(--foreground) 5%, transparent), transparent 50%);
+}
+
+.auth-card {
+	width: 100%;
+	max-width: 23.5rem;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-xl);
+	box-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 24px 48px -24px oklch(0 0 0 / 0.18);
+	padding: 1.875rem;
+}
+
+.auth-brand {
+	display: flex;
+	align-items: center;
+	gap: var(--space-4);
+	margin-bottom: 1.375rem;
+}
+
+.auth-brand-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	line-height: 1.2;
+}
+
+.auth-brand .brand-logo {
+	width: var(--control-h);
+	height: var(--control-h);
+	border-radius: var(--radius-md);
+}
+
+.auth-brand .brand-logo > svg {
+	width: 1.1875rem;
+	height: 1.1875rem;
+}
+
+.auth-brand-name {
+	font-size: 0.9375rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.auth-brand-host {
+	display: block;
+	font-size: var(--text-xs);
+	font-weight: 400;
+	color: var(--muted-foreground);
+	line-height: var(--leading-snug);
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.auth-head {
+	margin-bottom: var(--space-8);
+}
+
+.auth-head h1 {
+	font-size: 1.1875rem;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	margin: 0 0 var(--space-1);
+	line-height: var(--leading-tight);
+}
+
+.auth-head p {
+	font-size: var(--text-sm);
+	color: var(--muted-foreground);
+	margin: 0;
+	line-height: var(--leading-normal);
+}
+
+.auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-6);
+}
+
+.auth-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3125rem;
+	min-width: 0;
+}
+
+.auth-field > label {
+	font-size: var(--text-sm);
+	font-weight: 500;
+	color: var(--foreground);
+	line-height: var(--leading-snug);
+}
+
+.auth-field > input,
+.auth-field > .cbi-dropdown,
+.auth-field > .cbi-select {
+	width: 100% !important;
+	max-width: none;
+	height: var(--control-h-lg);
+}
+
+.auth-submit {
+	width: 100%;
+	height: var(--control-h-lg);
+	margin-top: var(--space-1);
+	font-size: var(--text-base);
+}
+
+.auth-meta {
+	font-size: var(--text-2xs);
+	color: var(--muted-foreground);
+	text-align: center;
+	line-height: var(--leading-relaxed);
+}
+
+.auth-meta a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.auth-meta a:hover {
+	color: var(--foreground);
+	text-decoration: underline;
+}
+
+.auth-card .alert-message {
+	margin-bottom: var(--space-1);
+}
+
+/* legacy login button rendered by third-party auth plugins */
+#modal_overlay > .modal.login > button.important,
+.modal.login > button.important {
+	width: 100%;
+	height: var(--control-h-lg);
+	font-size: var(--text-base) !important;
+	margin-top: var(--space-3);
+}
+
+/* ==================================================================
+ * Narrow viewports
+ *
+ * Only what the token swap cannot express: touch ergonomics and the
+ * scrollable tab strip.
  * ================================================================ */
 @media screen and (max-width: 767px) {
-	.cbi-value {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 0.25rem;
-		padding: 0.75rem 0;
+	/* 16px prevents iOS from zooming on focus */
+	input[type="text"],
+	input[type="password"],
+	input[type="number"],
+	input[type="email"],
+	input[type="url"],
+	input[type="search"],
+	input:not([type]),
+	select,
+	textarea,
+	.cbi-select,
+	.cbi-dropdown:not(.btn):not(.cbi-button) {
+		font-size: var(--text-lg);
 	}
 
-	.cbi-value label.cbi-value-title,
-	.cbi-value > .cbi-value-title {
-		padding-top: 0;
-	}
-
-	.cbi-value-field > input:not([type="checkbox"]):not([type="radio"]),
-	.cbi-value-field > textarea,
-	.cbi-value-field > select,
-	.cbi-value-field > .cbi-select,
-	.cbi-value-field > .cbi-dropdown:not(.btn):not(.cbi-button) {
-		max-width: none;
-	}
-
-	.cbi-section {
-		padding: 1rem;
-		border-radius: var(--radius-lg);
-	}
-
-	.cbi-section > h3 {
-		margin: -1rem -1rem 0.875rem;
-		padding: 0.75rem 1rem;
-		border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-	}
-
-	.cbi-page-actions {
-		margin: 0 -1rem -1rem;
-		padding: 0.75rem 1rem;
-	}
-
-	.cbi-section > .cbi-section-node > .table,
-	.cbi-section > .table {
-		width: calc(100% + 2rem);
-		margin: 0 -1rem;
-	}
-
-	.table .th,
-	.table .td {
-		padding: 0.5rem 0.625rem;
-	}
-
-	.cbi-page-actions > .cbi-button,
-	.cbi-page-actions > form > .cbi-button {
-		flex: 1 1 auto;
+	.cbi-select select {
+		font-size: var(--text-lg);
 	}
 
 	.tabs,
@@ -5974,146 +6462,17 @@ footer ul.breadcrumb {
 	.cbi-tabmenu::-webkit-scrollbar {
 		display: none;
 	}
-}
 
-/* ==================================================================
- * Login / authorization page
- * ================================================================ */
-.auth-shell {
-	min-height: 100dvh;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 1.5rem;
-	padding: 2rem 1rem;
-	background: var(--background);
-	background-image:
-		radial-gradient(circle at 15% 0%, color-mix(in oklab, var(--foreground) 7%, transparent), transparent 45%),
-		radial-gradient(circle at 85% 100%, color-mix(in oklab, var(--foreground) 5%, transparent), transparent 50%);
-}
+	.cbi-page-actions > .cbi-button,
+	.cbi-page-actions > form > .cbi-button {
+		flex: 1 1 auto;
+	}
 
-.auth-card {
-	width: 100%;
-	max-width: 23.5rem;
-	background: var(--card);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-xl);
-	box-shadow: var(--shadow-lg);
-	padding: 1.75rem;
-}
-
-.auth-brand {
-	display: flex;
-	align-items: center;
-	gap: 0.625rem;
-	margin-bottom: 1.25rem;
-}
-
-.auth-brand .brand-logo {
-	width: 2.25rem;
-	height: 2.25rem;
-	border-radius: var(--radius-md);
-}
-
-.auth-brand .brand-logo > svg {
-	width: 1.1875rem;
-	height: 1.1875rem;
-}
-
-.auth-brand-name {
-	font-size: 0.9375rem;
-	font-weight: 600;
-	letter-spacing: -0.01em;
-	line-height: 1.2;
-}
-
-.auth-brand-host {
-	display: block;
-	font-size: 0.75rem;
-	font-weight: 400;
-	color: var(--muted-foreground);
-}
-
-.auth-head {
-	margin-bottom: 1.25rem;
-}
-
-.auth-head h1 {
-	font-size: 1.125rem;
-	font-weight: 600;
-	letter-spacing: -0.02em;
-	margin: 0 0 0.25rem;
-	line-height: 1.3;
-}
-
-.auth-head p {
-	font-size: 0.8125rem;
-	color: var(--muted-foreground);
-	margin: 0;
-}
-
-.auth-form {
-	display: flex;
-	flex-direction: column;
-	gap: 0.875rem;
-}
-
-.auth-field {
-	display: flex;
-	flex-direction: column;
-	gap: 0.3125rem;
-}
-
-.auth-field > label {
-	font-size: 0.8125rem;
-	font-weight: 500;
-	color: var(--foreground);
-	line-height: 1.4;
-}
-
-.auth-field > input,
-.auth-field > .cbi-dropdown {
-	width: 100% !important;
-	max-width: none;
-	height: 2.375rem;
-}
-
-.auth-submit {
-	width: 100%;
-	height: 2.375rem;
-	margin-top: 0.25rem;
-	font-size: 0.875rem;
-}
-
-.auth-meta {
-	font-size: 0.6875rem;
-	color: var(--muted-foreground);
-	text-align: center;
-	line-height: 1.6;
-}
-
-.auth-meta a {
-	color: inherit;
-	text-decoration: none;
-}
-
-.auth-meta a:hover {
-	color: var(--foreground);
-	text-decoration: underline;
-}
-
-.auth-card .alert-message {
-	margin-bottom: 0.25rem;
-}
-
-/* legacy login button rendered by third-party auth plugins */
-#modal_overlay > .modal.login > button.important,
-.modal.login > button.important {
-	width: 100%;
-	height: 2.375rem;
-	font-size: 0.875rem !important;
-	margin-top: 0.5rem;
+	.cbi-page-actions .secondary-action {
+		margin-right: 0;
+		flex-basis: 100%;
+		text-align: left;
+	}
 }
 
 /* ==================================================================
@@ -6150,526 +6509,5 @@ footer ul.breadcrumb {
 		box-shadow: none;
 		border-color: #ccc;
 		break-inside: avoid;
-	}
-}
-
-/* ===== src/75-polish.css ===== */
-/*!
- * luci-theme-beautiful — polish layer
- * Fine-grained visual refinements layered on top of the component
- * styles: typography rhythm, control proportions, active states and
- * the floating action bar.
- */
-
-/* ==================================================================
- * Sidebar
- * ================================================================ */
-.brand-logo {
-	width: 1.875rem;
-	height: 1.875rem;
-	border-radius: 0.5625rem;
-}
-
-.brand-logo > svg {
-	width: 1.0625rem;
-	height: 1.0625rem;
-}
-
-.brand-name {
-	font-size: 0.9375rem;
-	font-weight: 600;
-	letter-spacing: -0.015em;
-}
-
-.brand-desc {
-	font-size: 0.6875rem;
-	color: var(--muted-foreground);
-	letter-spacing: 0.01em;
-}
-
-.sidebar-brand {
-	gap: 0.6875rem;
-	padding: 0.3125rem 0.375rem;
-}
-
-.nav-group + .nav-group {
-	margin-top: 0.625rem;
-}
-
-.nav-group-label {
-	font-size: 0.6875rem;
-	font-weight: 600;
-	letter-spacing: 0.02em;
-	text-transform: none;
-	color: var(--muted-foreground);
-	padding: 0.4375rem 0.5rem;
-}
-
-.nav-link {
-	height: 2.25rem;
-	font-size: 0.875rem;
-	gap: 0.625rem;
-	padding: 0 0.5625rem;
-	letter-spacing: -0.005em;
-}
-
-.nav-icon {
-	width: 1.0625rem;
-	height: 1.0625rem;
-}
-
-.nav-icon > svg {
-	width: 1.0625rem;
-	height: 1.0625rem;
-	stroke-width: 1.6;
-}
-
-/* active marker sits inside the link, flush with its left edge */
-.nav-link.active::before {
-	left: 0;
-	width: 2px;
-	height: 1rem;
-	border-radius: 2px;
-}
-
-.nav-link.active {
-	font-weight: 500;
-}
-
-/* ==================================================================
- * Top bar
- * ================================================================ */
-.app-topbar {
-	gap: 0.875rem;
-	border-bottom: 1px solid var(--border);
-	background: color-mix(in oklab, var(--background) 80%, transparent);
-}
-
-.breadcrumb li > a:active {
-	background: var(--border);
-}
-
-.topbar-title {
-	letter-spacing: -0.022em;
-}
-
-.btn-icon {
-	width: 2.125rem;
-	height: 2.125rem;
-}
-
-/* indicators: quiet ghost chips instead of tinted labels */
-#indicators {
-	display: flex;
-	align-items: center;
-	gap: 0.375rem;
-}
-
-#indicators > span,
-#indicators .label {
-	height: 1.875rem;
-	padding: 0 0.625rem;
-	border-radius: var(--radius-md);
-	border: 1px solid var(--border);
-	background: transparent;
-	color: var(--muted-foreground);
-	font-size: 0.75rem;
-	font-weight: 500;
-	letter-spacing: 0;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.375rem;
-	box-shadow: none;
-}
-
-#indicators > span[data-style="active"] {
-	background: var(--muted);
-	border-color: transparent;
-	color: var(--foreground);
-}
-
-#indicators .label.important {
-	background: var(--primary);
-	border-color: var(--primary);
-	color: var(--primary-foreground);
-}
-
-#indicators > span[data-clickable],
-#indicators .label[data-clickable] {
-	cursor: pointer;
-}
-
-#indicators > span[data-clickable]:hover {
-	background: var(--accent);
-	border-color: var(--border);
-	color: var(--foreground);
-}
-
-/* ==================================================================
- * Cards & headings
- * ================================================================ */
-/* the view renders its own <h2> heading; the top bar already shows it */
-#view > h2:first-child,
-#view > h2[name="content"],
-.app-main-inner > h2:first-child {
-	display: none;
-}
-
-.cbi-section {
-	border-radius: var(--radius-xl);
-	box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.04);
-}
-
-.cbi-section > h3 {
-	font-size: 0.875rem;
-	font-weight: 600;
-	letter-spacing: -0.008em;
-	padding: 0.9375rem 1.25rem;
-}
-
-.cbi-map {
-	gap: 0.875rem;
-}
-
-.cbi-map > .cbi-map-descr {
-	margin-bottom: 0.125rem;
-}
-
-/* ==================================================================
- * Form rows — tighter rhythm, aligned baselines
- * ================================================================ */
-.cbi-value {
-	grid-template-columns: minmax(0, 11.5rem) minmax(0, 1fr);
-	gap: 0.375rem 1.5rem;
-	padding: 0.8125rem 0;
-	border-bottom: 1px solid color-mix(in oklab, var(--border) 55%, transparent);
-}
-
-.cbi-value label.cbi-value-title,
-.cbi-value > .cbi-value-title {
-	padding-top: 0.5625rem;
-	font-weight: 500;
-	letter-spacing: -0.005em;
-}
-
-.cbi-value-description {
-	font-size: 0.75rem;
-	line-height: 1.55;
-	color: var(--muted-foreground);
-	margin-top: 0.375rem;
-	letter-spacing: 0;
-}
-
-/* every text control in a value field fills the column */
-.cbi-value-field input[type="text"],
-.cbi-value-field input[type="password"],
-.cbi-value-field input[type="number"],
-.cbi-value-field input[type="email"],
-.cbi-value-field input[type="url"],
-.cbi-value-field input[type="search"],
-.cbi-value-field input:not([type]),
-.cbi-value-field select,
-.cbi-value-field .cbi-select,
-.cbi-value-field .cbi-dropdown:not(.btn):not(.cbi-button) {
-	width: 100%;
-	max-width: 26rem;
-}
-
-.cbi-value-field input[type="text"]::placeholder,
-.cbi-value-field input[type="password"]::placeholder {
-	color: var(--muted-foreground);
-}
-
-/* buttons stacked next to an input keep a comfortable width */
-.cbi-value-field > .cbi-button,
-.cbi-value-field > form > .cbi-button {
-	flex: 0 0 auto;
-}
-
-/* ==================================================================
- * Buttons — slightly softer geometry, clearer hierarchy
- * ================================================================ */
-.btn,
-.cbi-button,
-button.btn,
-input[type="button"],
-input[type="reset"],
-input[type="submit"] {
-	border-radius: var(--radius-md);
-	font-weight: 500;
-	letter-spacing: -0.005em;
-}
-
-.cbi-button-action,
-.cbi-button-neutral,
-.cbi-button-edit,
-.cbi-button-down,
-.cbi-button-add {
-	background: var(--secondary);
-	border-color: transparent;
-	color: var(--secondary-foreground);
-}
-
-.cbi-button-action:hover,
-.cbi-button-neutral:hover,
-.cbi-button-edit:hover,
-.cbi-button-down:hover,
-.cbi-button-add:hover {
-	background: color-mix(in oklab, var(--secondary) 78%, var(--foreground));
-	color: var(--secondary-foreground);
-}
-
-.cbi-button-reset {
-	background: transparent;
-	border-color: var(--border);
-}
-
-/* pressed feedback */
-.btn:active,
-.cbi-button:active,
-input[type="submit"]:active,
-input[type="button"]:active {
-	transform: translateY(0.5px);
-	filter: brightness(0.98);
-}
-
-/* ==================================================================
- * Inputs
- * ================================================================ */
-input[type="text"],
-input[type="password"],
-input[type="number"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-input:not([type]),
-textarea,
-select,
-.cbi-select,
-.cbi-dropdown:not(.btn):not(.cbi-button) {
-	border-radius: var(--radius-md);
-	font-size: 0.8125rem;
-	letter-spacing: -0.003em;
-}
-
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible,
-.cbi-select:focus-within,
-.cbi-dropdown:focus-visible {
-	border-color: color-mix(in oklab, var(--ring) 85%, var(--foreground)) !important;
-	box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 32%, transparent);
-}
-
-.cbi-select:focus-within {
-	border-color: color-mix(in oklab, var(--ring) 85%, var(--foreground));
-}
-
-/* native <select>: consistent caret across browsers */
-select:not([multiple]) {
-	appearance: none;
-	-webkit-appearance: none;
-	padding-right: 1.875rem;
-	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-	background-repeat: no-repeat;
-	background-position: right 0.5rem center;
-	background-size: 1rem 1rem;
-}
-
-:root[data-darkmode="true"] select:not([multiple]) {
-	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-}
-
-/* ==================================================================
- * Tabs — clearer selected state
- * ================================================================ */
-.tabs,
-.cbi-tabmenu {
-	padding: 0.1875rem;
-	border-radius: var(--radius-lg);
-	gap: 0.125rem;
-}
-
-.tabs > li.active,
-.cbi-tabmenu > li.cbi-tab {
-	background: var(--background);
-	box-shadow: 0 1px 2px oklch(0 0 0 / 0.06), 0 0 0 1px color-mix(in oklab, var(--border) 80%, transparent);
-	font-weight: 500;
-}
-
-.tabs > li > a,
-.cbi-tabmenu > li > a {
-	padding: 0 0.6875rem;
-	font-size: 0.8125rem;
-}
-
-/* ==================================================================
- * Tables
- * ================================================================ */
-.table .th {
-	font-size: 0.75rem;
-	font-weight: 500;
-	letter-spacing: 0;
-	color: var(--muted-foreground);
-	background: color-mix(in oklab, var(--muted) 60%, var(--card));
-}
-
-.table .td {
-	padding: 0.6875rem 0.75rem;
-}
-
-.table .tr:hover .td {
-	background: color-mix(in oklab, var(--muted) 45%, transparent);
-}
-
-/* ==================================================================
- * Progress bars — visible caption, sleeker track
- * ================================================================ */
-.cbi-progressbar {
-	height: 0.375rem;
-	margin: 1.5rem 0 0.5rem;
-	background: var(--muted);
-	border-radius: 999px;
-	box-shadow: none;
-}
-
-.cbi-progressbar > div {
-	background: var(--foreground);
-	border-radius: 999px;
-}
-
-.cbi-progressbar::before {
-	top: -1.25rem;
-	font-size: 0.6875rem;
-	font-weight: 500;
-	color: var(--muted-foreground);
-	letter-spacing: 0.01em;
-}
-
-/* ==================================================================
- * Floating action bar
- * ================================================================ */
-.actions,
-.cbi-page-actions {
-	position: sticky;
-	bottom: 0.75rem;
-	margin: 0.5rem 0 0;
-	padding: 0.625rem;
-	gap: 0.5rem;
-	background: color-mix(in oklab, var(--card) 82%, transparent);
-	backdrop-filter: saturate(180%) blur(12px);
-	-webkit-backdrop-filter: saturate(180%) blur(12px);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-lg);
-	box-shadow: var(--shadow-md);
-	justify-content: flex-end;
-	align-items: center;
-}
-
-.cbi-page-actions > .cbi-button,
-.cbi-page-actions > form > .cbi-button,
-.cbi-page-actions > .cbi-dropdown.btn,
-.cbi-page-actions > .cbi-dropdown.cbi-button {
-	height: 2.125rem;
-	font-size: 0.8125rem;
-}
-
-.cbi-page-actions .cbi-dropdown.btn > ul > li,
-.cbi-page-actions .cbi-dropdown.cbi-button > ul > li {
-	font-size: 0.8125rem;
-}
-
-/* ==================================================================
- * Badges
- * ================================================================ */
-.label,
-.label.important,
-.label.warning,
-.label.success {
-	height: 1.375rem;
-	padding: 0 0.4375rem;
-	border-radius: 0.375rem;
-	font-size: 0.6875rem;
-	font-weight: 500;
-	letter-spacing: 0;
-}
-
-.cbi-section > h3 .label {
-	font-size: 0.6875rem;
-	height: 1.5rem;
-	padding: 0 0.5625rem;
-}
-
-/* ==================================================================
- * Modal
- * ================================================================ */
-.modal {
-	padding: 1.375rem;
-	border-radius: var(--radius-xl);
-}
-
-.modal > h4 {
-	font-size: 0.9375rem;
-	margin-bottom: 0.625rem;
-}
-
-.modal > .button-row {
-	padding-top: 0.25rem;
-}
-
-/* ==================================================================
- * Login card
- * ================================================================ */
-.auth-card {
-	padding: 1.875rem;
-	border-radius: var(--radius-xl);
-	box-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 24px 48px -24px oklch(0 0 0 / 0.18);
-}
-
-.auth-brand {
-	margin-bottom: 1.375rem;
-}
-
-.auth-head h1 {
-	font-size: 1.1875rem;
-}
-
-.auth-field > input {
-	border-radius: var(--radius-md);
-}
-
-.auth-submit {
-	border-radius: var(--radius-md);
-}
-
-/* ==================================================================
- * Footer
- * ================================================================ */
-.app-footer {
-	padding: 1rem 1.75rem;
-	font-size: 0.6875rem;
-	color: var(--muted-foreground);
-	letter-spacing: 0.005em;
-}
-
-.app-footer .footer-meta {
-	opacity: 0.75;
-}
-
-@media screen and (max-width: 640px) {
-	.app-footer {
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.25rem;
-		padding: 0.875rem 1rem;
-		line-height: 1.6;
-	}
-
-	.app-footer .footer-meta {
-		display: none;
-	}
-
-	.cbi-value {
-		border-bottom-color: color-mix(in oklab, var(--border) 35%, transparent);
 	}
 }

@@ -2,6 +2,9 @@
  * luci-theme-beautiful — form controls
  * shadcn/ui Button / Input / Checkbox / Select primitives mapped onto
  * the LuCI class vocabulary (.btn, .cbi-button, .cbi-select, ...).
+ *
+ * Every control shares one height, one radius and one type size, all
+ * taken from the token layer. Variants only change colour.
  */
 
 /* ==================================================================
@@ -18,18 +21,19 @@ input[type="submit"] {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.375rem;
-	height: 2.25rem;
-	padding: 0 0.875rem;
+	gap: var(--space-2);
+	height: var(--control-h);
+	padding: 0 var(--space-6);
 	margin: 0;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
+	border-radius: var(--control-radius);
 	background: var(--background);
 	color: var(--foreground);
 	font-family: var(--font-sans);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 500;
 	line-height: 1;
+	letter-spacing: -0.005em;
 	white-space: nowrap;
 	cursor: pointer;
 	text-decoration: none;
@@ -52,8 +56,11 @@ input[type="submit"]:hover {
 }
 
 .btn:active,
-.cbi-button:active {
+.cbi-button:active,
+input[type="submit"]:active,
+input[type="button"]:active {
 	transform: translateY(0.5px);
+	filter: brightness(0.98);
 }
 
 .btn:focus-visible,
@@ -81,7 +88,9 @@ input[type="submit"][disabled] {
 .cbi-button-save,
 .cbi-button-apply,
 .cbi-button-action.important,
-.cbi-button.cbi-button-positive {
+.cbi-button.cbi-button-positive,
+.cbi-page-actions .cbi-button-apply,
+.cbi-page-actions .cbi-button-save {
 	background: var(--primary);
 	border-color: var(--primary);
 	color: var(--primary-foreground);
@@ -92,7 +101,9 @@ input[type="submit"][disabled] {
 .cbi-button-positive:hover,
 .cbi-button-save:hover,
 .cbi-button-apply:hover,
-.cbi-button-action.important:hover {
+.cbi-button-action.important:hover,
+.cbi-page-actions .cbi-button-apply:hover,
+.cbi-page-actions .cbi-button-save:hover {
 	background: color-mix(in oklab, var(--primary) 88%, var(--background));
 	border-color: color-mix(in oklab, var(--primary) 88%, var(--background));
 	color: var(--primary-foreground);
@@ -126,7 +137,7 @@ input[type="submit"][disabled] {
 	color: var(--destructive-foreground);
 }
 
-/* --- quiet / ghost ------------------------------------------------ */
+/* --- quiet / secondary -------------------------------------------- */
 .cbi-button-neutral,
 .cbi-button-reset,
 .cbi-button-edit,
@@ -134,20 +145,49 @@ input[type="submit"][disabled] {
 .cbi-button-add,
 .cbi-button-action,
 .btn.secondary {
-	background: transparent;
-	border-color: var(--border);
-	color: var(--foreground);
+	background: var(--secondary);
+	border-color: transparent;
+	color: var(--secondary-foreground);
 	box-shadow: none;
 }
 
 .cbi-button-neutral:hover,
-.cbi-button-reset:hover,
 .cbi-button-edit:hover,
 .cbi-button-down:hover,
 .cbi-button-add:hover,
 .cbi-button-action:hover {
+	background: color-mix(in oklab, var(--secondary) 78%, var(--foreground));
+	color: var(--secondary-foreground);
+}
+
+.cbi-button-reset {
+	background: transparent;
+	border-color: var(--border);
+}
+
+.cbi-button-reset:hover {
 	background: var(--accent);
 	color: var(--accent-foreground);
+}
+
+/* Table row actions keep the quiet treatment. luci-theme-bootstrap paints
+ * `.cbi-section-actions .cbi-button-edit` with a foreground gradient and
+ * flips --on-color to the light foreground; once the palette is remapped
+ * that renders black text on a black fill, so the surface is re-asserted
+ * at matching specificity. */
+.cbi-section-actions .cbi-button-edit,
+.cbi-section-actions .cbi-button-action {
+	background: var(--secondary);
+	border-color: transparent;
+	color: var(--secondary-foreground);
+	box-shadow: none;
+}
+
+.cbi-section-actions .cbi-button-edit:hover,
+.cbi-section-actions .cbi-button-action:hover {
+	background: color-mix(in oklab, var(--secondary) 78%, var(--foreground));
+	border-color: transparent;
+	color: var(--secondary-foreground);
 }
 
 /* empty submit/button inputs (form plumbing) must not render as buttons */
@@ -159,16 +199,16 @@ input[type="reset"][value=""] {
 
 /* --- sizing ------------------------------------------------------- */
 .btn.large {
-	height: 2.5rem;
-	padding: 0 1.125rem;
-	font-size: 0.875rem;
+	height: var(--control-h-lg);
+	padding: 0 var(--space-8);
+	font-size: var(--text-base);
 }
 
 .btn.small,
 .cbi-button.small {
-	height: 1.875rem;
-	padding: 0 0.625rem;
-	font-size: 0.75rem;
+	height: var(--control-h-sm);
+	padding: 0 var(--space-4);
+	font-size: var(--text-xs);
 }
 
 /* compact buttons inside tables and inline sections */
@@ -176,16 +216,16 @@ input[type="reset"][value=""] {
 .th .cbi-button,
 .cbi-section-actions .cbi-button,
 .cbi-dynlist .cbi-button {
-	height: 1.875rem;
-	padding: 0 0.625rem;
-	font-size: 0.75rem;
+	height: var(--control-h-sm);
+	padding: 0 var(--space-4);
+	font-size: var(--text-xs);
 	box-shadow: none;
 }
 
 /* square icon-only buttons (table row actions) */
 .td .cbi-button[title]:empty,
 .td .cbi-button.cbi-button-edit:empty {
-	width: 1.875rem;
+	width: var(--control-h-sm);
 	padding: 0;
 }
 
@@ -194,9 +234,9 @@ input[type="reset"][value=""] {
 	background: none;
 	border: 0;
 	color: inherit;
-	font-size: 1rem;
+	font-size: var(--text-lg);
 	line-height: 1;
-	padding: 0 0.25rem;
+	padding: 0 var(--space-1);
 	opacity: 0.6;
 }
 
@@ -219,26 +259,27 @@ select,
 .cbi-select,
 .cbi-dropdown:not(.btn):not(.cbi-button) {
 	display: inline-block;
-	width: 13.125rem;
+	width: var(--control-min-w);
 	max-width: 100%;
-	height: 2.25rem;
-	padding: 0 0.6875rem;
+	height: var(--control-h);
+	padding: 0 var(--control-px);
 	background: var(--background);
 	color: var(--foreground);
 	font-family: var(--font-sans);
-	font-size: 0.8125rem;
-	line-height: 2.25rem;
+	font-size: var(--text-sm);
+	line-height: var(--control-h);
 	border: 1px solid var(--input);
-	border-radius: var(--radius-md);
+	border-radius: var(--control-radius);
 	box-shadow: var(--shadow-2xs);
 	transition: border-color 120ms ease, box-shadow 120ms ease, background-color 120ms ease;
 	vertical-align: middle;
+	letter-spacing: -0.003em;
 }
 
 textarea {
 	height: auto;
 	min-height: 5.5rem;
-	padding: 0.5rem 0.6875rem;
+	padding: var(--space-3) var(--control-px);
 	line-height: 1.55;
 	resize: vertical;
 }
@@ -271,45 +312,40 @@ select[disabled],
 	background: var(--muted);
 }
 
-/* widen inputs inside card forms */
-.cbi-value-field > input:not([type="checkbox"]):not([type="radio"]),
-.cbi-value-field > textarea,
-.cbi-value-field > select,
-.cbi-value-field > .cbi-select,
-.cbi-value-field > .cbi-dropdown:not(.btn):not(.cbi-button) {
-	width: 100%;
-	max-width: 26rem;
+/* native <select>: consistent caret across browsers */
+select:not([multiple]) {
+	appearance: none;
+	-webkit-appearance: none;
+	padding-right: 1.875rem;
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right var(--space-3) center;
+	background-size: var(--space-7) var(--space-7);
 }
 
-.cbi-value-field > textarea {
-	max-width: 40rem;
-}
-
-@media screen and (min-width: 768px) {
-	#localtime {
-		width: 18.75rem;
-	}
+:root[data-darkmode="true"] select:not([multiple]) {
+	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
 }
 
 input[type="file"] {
 	width: auto !important;
 	height: auto;
-	padding: 0.375rem 0.5rem;
-	font-size: 0.8125rem;
+	padding: var(--space-2) var(--space-3);
+	font-size: var(--text-sm);
 	background: var(--muted);
 	border-style: dashed;
-	line-height: 1.4;
+	line-height: var(--leading-snug);
 }
 
 input[type="file"]::file-selector-button {
-	margin-right: 0.625rem;
-	padding: 0.25rem 0.625rem;
+	margin-right: var(--space-4);
+	padding: var(--space-1) var(--space-4);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	background: var(--background);
 	color: var(--foreground);
 	font-family: inherit;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 	font-weight: 500;
 	cursor: pointer;
 }
@@ -321,13 +357,15 @@ input[type="file"]::file-selector-button:hover {
 select[multiple] {
 	height: auto;
 	min-height: 6rem;
-	padding: 0.375rem;
+	padding: var(--space-2);
 	background: var(--background);
+	line-height: var(--leading-normal);
 }
 
 select[multiple] option {
-	padding: 0.25rem 0.5rem;
+	padding: var(--space-1) var(--space-3);
 	border-radius: var(--radius-xs);
+	line-height: var(--leading-normal);
 }
 
 /* ==================================================================
@@ -340,8 +378,8 @@ input[type="radio"] {
 	appearance: none;
 	-webkit-appearance: none;
 	position: relative;
-	width: 1rem;
-	height: 1rem;
+	width: var(--space-7);
+	height: var(--space-7);
 	margin: 0;
 	padding: 0;
 	display: inline-block;
@@ -352,6 +390,7 @@ input[type="radio"] {
 	border-radius: 0.25rem;
 	box-shadow: var(--shadow-2xs);
 	transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+	flex: 0 0 auto;
 }
 
 input[type="radio"] {
@@ -417,14 +456,14 @@ input[type="radio"].cbi-input-invalid {
 	width: 100%;
 	height: 100%;
 	margin: 0;
-	padding: 0 2rem 0 0.6875rem;
+	padding: 0 var(--space-10) 0 var(--control-px);
 	border: 0;
 	outline: none;
 	background: transparent;
 	color: inherit;
 	font-family: inherit;
-	font-size: 0.8125rem;
-	line-height: 2.25rem;
+	font-size: var(--text-sm);
+	line-height: var(--control-h);
 	cursor: pointer;
 	box-shadow: none;
 }
@@ -433,16 +472,21 @@ input[type="radio"].cbi-input-invalid {
 	content: "";
 	position: absolute;
 	top: 50%;
-	right: 0.5rem;
-	width: 1rem;
-	height: 1rem;
-	margin-top: -0.5rem;
+	right: var(--space-3);
+	width: var(--space-7);
+	height: var(--space-7);
+	margin-top: calc(var(--space-7) / -2);
 	background: var(--muted-foreground);
 	-webkit-mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/1rem no-repeat;
 	mask: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/1rem no-repeat;
 	pointer-events: none;
 	border-radius: 0;
 	display: block;
+}
+
+.cbi-select:focus-within {
+	border-color: color-mix(in oklab, var(--ring) 85%, var(--foreground));
+	box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 32%, transparent);
 }
 
 .cbi-select.cbi-input-invalid {
@@ -460,12 +504,12 @@ input[type="radio"].cbi-input-invalid {
 .cbi-dynlist {
 	display: inline-flex;
 	flex-direction: column;
-	gap: 0.375rem;
+	gap: var(--space-2);
 	width: 100%;
-	max-width: 26rem;
-	min-width: 13.125rem;
+	max-width: var(--control-max-w);
+	min-width: var(--control-min-w);
 	height: auto;
-	min-height: 2.25rem;
+	min-height: var(--control-h);
 	padding: 0;
 	border: 0;
 	background: none;
@@ -477,12 +521,13 @@ input[type="radio"].cbi-input-invalid {
 	display: flex;
 	align-items: center;
 	min-height: 2.125rem;
-	padding: 0.375rem 2.25rem 0.375rem 0.625rem;
+	padding: var(--space-2) var(--control-h) var(--space-2) var(--space-4);
 	background: var(--muted);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-sm);
 	color: var(--foreground);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
 	box-shadow: none;
 	cursor: move;
 	word-break: break-all;
@@ -521,7 +566,7 @@ input[type="radio"].cbi-input-invalid {
 
 .cbi-dynlist > .add-item {
 	display: flex;
-	gap: 0.375rem;
+	gap: var(--space-2);
 }
 
 .cbi-dynlist > .add-item > input,
@@ -534,25 +579,29 @@ input[type="radio"].cbi-input-invalid {
 }
 
 /* ==================================================================
- * Page actions — sticky card footer
+ * Page actions — one sticky bar for every form page
+ *
+ * Horizontal bleed is derived from --card-pad so the bar stays flush
+ * with the card edges at every breakpoint.
  * ================================================================ */
 .actions,
 .cbi-page-actions {
 	position: sticky;
-	bottom: 0;
+	bottom: var(--space-5);
 	z-index: 20;
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
 	flex-wrap: wrap;
-	gap: 0.5rem;
-	margin: 0 -1.25rem -1.25rem;
-	padding: 0.875rem 1.25rem;
-	background: color-mix(in oklab, var(--card) 88%, transparent);
-	backdrop-filter: blur(10px);
-	-webkit-backdrop-filter: blur(10px);
-	border-top: 1px solid var(--border);
-	border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+	gap: var(--space-3);
+	margin: var(--space-3) 0 0;
+	padding: var(--space-4);
+	background: color-mix(in oklab, var(--card) 82%, transparent);
+	backdrop-filter: saturate(180%) blur(12px);
+	-webkit-backdrop-filter: saturate(180%) blur(12px);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-md);
 	text-align: right;
 }
 
@@ -563,11 +612,21 @@ input[type="radio"].cbi-input-invalid {
 .cbi-page-actions > * {
 	float: none;
 	margin: 0;
+	vertical-align: middle;
 }
 
 .cbi-page-actions > form {
 	display: inline-flex;
 	margin: 0;
+	gap: var(--space-3);
+}
+
+.cbi-page-actions > .cbi-button,
+.cbi-page-actions > form > .cbi-button,
+.cbi-page-actions > .cbi-dropdown.btn,
+.cbi-page-actions > .cbi-dropdown.cbi-button {
+	height: var(--control-h);
+	font-size: var(--text-sm);
 }
 
 .cbi-page-actions .secondary-action {
@@ -577,8 +636,8 @@ input[type="radio"].cbi-input-invalid {
 }
 
 .cbi-page-actions .secondary-action a {
-	font-size: 0.8125rem;
-	line-height: 2.25rem;
+	font-size: var(--text-sm);
+	line-height: var(--control-h);
 	color: var(--muted-foreground);
 	text-decoration: none;
 }

@@ -13,7 +13,7 @@
 	const pagetitle = striptags(_(dispatched?.title ?? ''));
 
 	/* bump on every release so browsers pick up the new stylesheet */
-	const assetver = 'c18bca2d';
+	const assetver = '574872e1';
 
 	http.prepare_content('text/html; charset=UTF-8');
 -%}
@@ -73,20 +73,36 @@
 		<script src="{{ dispatcher.build_url('admin/translations', dispatcher.lang) }}"></script>
 		<script src="{{ resource }}/cbi.js?v={{ version.luciversion }}"></script>
 		<script>
-			/* TEMP diagnostics: append ?__diag=1 to surface runtime errors in the tab title */
+			/* TEMP diagnostics: append ?__diag=1 to dump the boot state into the title */
 			(function() {
 				if (location.search.indexOf('__diag') < 0)
 					return;
 
-				var put = function(s) { document.title = String(s).replace(/\s+/g, ' ').slice(0, 140); };
+				var errs = [];
 
 				window.addEventListener('error', function(e) {
-					put('ERR ' + (e.message || '') + ' @' + String(e.filename || '').split('/').pop() + ':' + e.lineno);
+					errs.push('E:' + (e.message || '') + '@' + String(e.filename || '').split('/').pop() + ':' + e.lineno);
 				});
 				window.addEventListener('unhandledrejection', function(e) {
 					var r = e.reason;
-					put('REJ ' + (r && (r.message || r)));
+					errs.push('R:' + (r && (r.message || String(r))));
 				});
+
+				setTimeout(function() {
+					var v = document.getElementById('view');
+					var m = document.getElementById('topmenu');
+					var parts = [
+						'L=' + (typeof L),
+						'luci=' + (typeof LuCI),
+						'fmt=' + (typeof String.prototype.format),
+						'rs=' + document.readyState,
+						'view=' + (v ? (v.querySelector('.spinning') ? 'spinning' : 'kids' + v.children.length) : 'none'),
+						'menu=' + (m ? m.children.length : 'none'),
+						'scripts=' + document.scripts.length,
+						'errs=' + (errs.slice(-2).join(';') || 'none')
+					];
+					document.title = 'DIAG ' + parts.join(' ');
+				}, 3500);
 			})();
 		</script>
 	</head>
@@ -123,8 +139,8 @@
 
 					<div class="sidebar-footer">
 						<ul class="mode-menu" id="modemenu" style="display:none"></ul>
-						<div class="sidebar-version">
-							{{ version.luciversion }}
+						<div class="sidebar-version" title="LuCI {{ version.luciversion }}">
+							LuCI {{ version.luciversion }}
 						</div>
 					</div>
 				</div>

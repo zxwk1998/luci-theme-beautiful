@@ -1,60 +1,189 @@
 /*!
- * luci-theme-beautiful — utilities, login page, responsive refinements
+ * luci-theme-beautiful — utilities, login page, print
+ *
+ * Responsive geometry is intentionally absent: breakpoints only swap
+ * tokens in 10-tokens.css, so no component is restated here.
  */
 
 /* ==================================================================
- * Single column form rows on narrow screens
+ * Login / authorization page
+ * ================================================================ */
+.auth-shell {
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--space-9);
+	padding: var(--space-10) var(--space-7);
+	background: var(--background);
+	background-image:
+		radial-gradient(circle at 15% 0%, color-mix(in oklab, var(--foreground) 7%, transparent), transparent 45%),
+		radial-gradient(circle at 85% 100%, color-mix(in oklab, var(--foreground) 5%, transparent), transparent 50%);
+}
+
+.auth-card {
+	width: 100%;
+	max-width: 23.5rem;
+	background: var(--card);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-xl);
+	box-shadow: 0 1px 2px oklch(0 0 0 / 0.04), 0 24px 48px -24px oklch(0 0 0 / 0.18);
+	padding: 1.875rem;
+}
+
+.auth-brand {
+	display: flex;
+	align-items: center;
+	gap: var(--space-4);
+	margin-bottom: 1.375rem;
+}
+
+.auth-brand-text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	line-height: 1.2;
+}
+
+.auth-brand .brand-logo {
+	width: var(--control-h);
+	height: var(--control-h);
+	border-radius: var(--radius-md);
+}
+
+.auth-brand .brand-logo > svg {
+	width: 1.1875rem;
+	height: 1.1875rem;
+}
+
+.auth-brand-name {
+	font-size: var(--text-md);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.auth-brand-host {
+	display: block;
+	font-size: var(--text-xs);
+	font-weight: 400;
+	color: var(--muted-foreground);
+	line-height: var(--leading-snug);
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.auth-head {
+	margin-bottom: var(--space-8);
+}
+
+.auth-head h1 {
+	font-size: var(--text-xl);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	margin: 0 0 var(--space-1);
+	line-height: var(--leading-tight);
+}
+
+.auth-head p {
+	font-size: var(--text-sm);
+	color: var(--muted-foreground);
+	margin: 0;
+	line-height: var(--leading-normal);
+}
+
+.auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-6);
+}
+
+.auth-field {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3125rem;
+	min-width: 0;
+}
+
+.auth-field > label {
+	font-size: var(--text-sm);
+	font-weight: 500;
+	color: var(--foreground);
+	line-height: var(--leading-snug);
+}
+
+.auth-field > input,
+.auth-field > .cbi-dropdown,
+.auth-field > .cbi-select {
+	width: 100% !important;
+	max-width: none;
+	height: var(--control-h-lg);
+}
+
+.auth-submit {
+	width: 100%;
+	height: var(--control-h-lg);
+	margin-top: var(--space-1);
+	font-size: var(--text-base);
+}
+
+.auth-meta {
+	font-size: var(--text-2xs);
+	color: var(--muted-foreground);
+	text-align: center;
+	line-height: var(--leading-relaxed);
+}
+
+.auth-meta a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.auth-meta a:hover {
+	color: var(--foreground);
+	text-decoration: underline;
+}
+
+.auth-card .alert-message {
+	margin-bottom: var(--space-1);
+}
+
+/* legacy login button rendered by third-party auth plugins */
+#modal_overlay > .modal.login > button.important,
+.modal.login > button.important {
+	width: 100%;
+	height: var(--control-h-lg);
+	font-size: var(--text-base) !important;
+	margin-top: var(--space-3);
+}
+
+/* ==================================================================
+ * Narrow viewports
+ *
+ * Only what the token swap cannot express: touch ergonomics and the
+ * scrollable tab strip.
  * ================================================================ */
 @media screen and (max-width: 767px) {
-	.cbi-value {
-		grid-template-columns: minmax(0, 1fr);
-		gap: 0.25rem;
-		padding: 0.75rem 0;
+	/* 16px prevents iOS from zooming on focus */
+	input[type="text"],
+	input[type="password"],
+	input[type="number"],
+	input[type="email"],
+	input[type="url"],
+	input[type="search"],
+	input:not([type]),
+	select,
+	textarea,
+	.cbi-select,
+	.cbi-dropdown:not(.btn):not(.cbi-button) {
+		font-size: var(--text-lg);
 	}
 
-	.cbi-value label.cbi-value-title,
-	.cbi-value > .cbi-value-title {
-		padding-top: 0;
-	}
-
-	.cbi-value-field > input:not([type="checkbox"]):not([type="radio"]),
-	.cbi-value-field > textarea,
-	.cbi-value-field > select,
-	.cbi-value-field > .cbi-select,
-	.cbi-value-field > .cbi-dropdown:not(.btn):not(.cbi-button) {
-		max-width: none;
-	}
-
-	.cbi-section {
-		padding: 1rem;
-		border-radius: var(--radius-lg);
-	}
-
-	.cbi-section > h3 {
-		margin: -1rem -1rem 0.875rem;
-		padding: 0.75rem 1rem;
-		border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-	}
-
-	.cbi-page-actions {
-		margin: 0 -1rem -1rem;
-		padding: 0.75rem 1rem;
-	}
-
-	.cbi-section > .cbi-section-node > .table,
-	.cbi-section > .table {
-		width: calc(100% + 2rem);
-		margin: 0 -1rem;
-	}
-
-	.table .th,
-	.table .td {
-		padding: 0.5rem 0.625rem;
-	}
-
-	.cbi-page-actions > .cbi-button,
-	.cbi-page-actions > form > .cbi-button {
-		flex: 1 1 auto;
+	.cbi-select select {
+		font-size: var(--text-lg);
 	}
 
 	.tabs,
@@ -69,146 +198,17 @@
 	.cbi-tabmenu::-webkit-scrollbar {
 		display: none;
 	}
-}
 
-/* ==================================================================
- * Login / authorization page
- * ================================================================ */
-.auth-shell {
-	min-height: 100dvh;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	gap: 1.5rem;
-	padding: 2rem 1rem;
-	background: var(--background);
-	background-image:
-		radial-gradient(circle at 15% 0%, color-mix(in oklab, var(--foreground) 7%, transparent), transparent 45%),
-		radial-gradient(circle at 85% 100%, color-mix(in oklab, var(--foreground) 5%, transparent), transparent 50%);
-}
+	.cbi-page-actions > .cbi-button,
+	.cbi-page-actions > form > .cbi-button {
+		flex: 1 1 auto;
+	}
 
-.auth-card {
-	width: 100%;
-	max-width: 23.5rem;
-	background: var(--card);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-xl);
-	box-shadow: var(--shadow-lg);
-	padding: 1.75rem;
-}
-
-.auth-brand {
-	display: flex;
-	align-items: center;
-	gap: 0.625rem;
-	margin-bottom: 1.25rem;
-}
-
-.auth-brand .brand-logo {
-	width: 2.25rem;
-	height: 2.25rem;
-	border-radius: var(--radius-md);
-}
-
-.auth-brand .brand-logo > svg {
-	width: 1.1875rem;
-	height: 1.1875rem;
-}
-
-.auth-brand-name {
-	font-size: 0.9375rem;
-	font-weight: 600;
-	letter-spacing: -0.01em;
-	line-height: 1.2;
-}
-
-.auth-brand-host {
-	display: block;
-	font-size: 0.75rem;
-	font-weight: 400;
-	color: var(--muted-foreground);
-}
-
-.auth-head {
-	margin-bottom: 1.25rem;
-}
-
-.auth-head h1 {
-	font-size: 1.125rem;
-	font-weight: 600;
-	letter-spacing: -0.02em;
-	margin: 0 0 0.25rem;
-	line-height: 1.3;
-}
-
-.auth-head p {
-	font-size: 0.8125rem;
-	color: var(--muted-foreground);
-	margin: 0;
-}
-
-.auth-form {
-	display: flex;
-	flex-direction: column;
-	gap: 0.875rem;
-}
-
-.auth-field {
-	display: flex;
-	flex-direction: column;
-	gap: 0.3125rem;
-}
-
-.auth-field > label {
-	font-size: 0.8125rem;
-	font-weight: 500;
-	color: var(--foreground);
-	line-height: 1.4;
-}
-
-.auth-field > input,
-.auth-field > .cbi-dropdown {
-	width: 100% !important;
-	max-width: none;
-	height: 2.375rem;
-}
-
-.auth-submit {
-	width: 100%;
-	height: 2.375rem;
-	margin-top: 0.25rem;
-	font-size: 0.875rem;
-}
-
-.auth-meta {
-	font-size: 0.6875rem;
-	color: var(--muted-foreground);
-	text-align: center;
-	line-height: 1.6;
-}
-
-.auth-meta a {
-	color: inherit;
-	text-decoration: none;
-}
-
-.auth-meta a:hover {
-	color: var(--foreground);
-	text-decoration: underline;
-}
-
-.auth-card .alert-message {
-	margin-bottom: 0.25rem;
-}
-
-/* legacy login button rendered by third-party auth plugins */
-#modal_overlay > .modal.login > button.important,
-.modal.login > button.important {
-	width: 100%;
-	height: 2.375rem;
-	font-size: 0.875rem !important;
-	margin-top: 0.5rem;
+	.cbi-page-actions .secondary-action {
+		margin-right: 0;
+		flex-basis: 100%;
+		text-align: left;
+	}
 }
 
 /* ==================================================================

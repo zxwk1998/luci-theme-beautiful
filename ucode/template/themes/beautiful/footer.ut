@@ -8,7 +8,7 @@
 				</main>
 
 				<footer class="app-footer">
-					<span>
+					<span class="footer-credits">
 						{{ _('Powered by') }}
 						<a href="https://github.com/openwrt/luci" target="_blank" rel="noreferrer">
 							{{ version.luciname }} ({{ version.luciversion }})</a>
@@ -20,7 +20,10 @@
 						{% endif %}
 					</span>
 					<span class="footer-meta">
-						<a href="https://github.com/openwrt/luci" target="_blank" rel="noreferrer">luci-theme-beautiful</a>
+						&copy; {{ gmtime().year }}
+						<a href="https://vuejs-core.cn" target="_blank" rel="noreferrer">vuejs-core.cn</a>
+						&middot;
+						luci-theme-beautiful
 					</span>
 				</footer>
 			</div>

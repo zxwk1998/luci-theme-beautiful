@@ -2,6 +2,13 @@
  * luci-theme-beautiful — surfaces
  * Cards, form rows, tables, tabs, alerts, badges, modal, dropdown,
  * tooltip and progress primitives.
+ *
+ * One layout model per primitive:
+ *   · cards      — padding comes from --card-pad, and every bleed
+ *                  (header, table, divider) is derived from it
+ *   · form rows  — a two-column grid: label | field, description
+ *                  spanning the field column
+ *   · tables     — one cell rhythm, one leading, actions never collapse
  */
 
 /* ==================================================================
@@ -10,12 +17,13 @@
 .cbi-map {
 	display: flex;
 	flex-direction: column;
-	gap: 1rem;
+	gap: var(--stack-gap);
 }
 
 /* the page title lives in the top bar, hide the duplicate in the content */
 .cbi-map > h2,
 .cbi-map > h2[name="content"],
+#view > h2:first-child,
 #view > h2[name="content"],
 .app-main-inner > h2[name="content"],
 .app-main-inner > h2:first-child {
@@ -23,11 +31,15 @@
 }
 
 .cbi-map > h2 + .cbi-map-descr {
-	margin-top: -0.25rem;
+	margin-top: calc(var(--space-1) * -1);
+}
+
+.cbi-map > .cbi-map-descr {
+	margin-bottom: 0.125rem;
 }
 
 .cbi-map-descr {
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	line-height: 1.55;
 	color: var(--muted-foreground);
 	margin: 0;
@@ -36,47 +48,52 @@
 
 /* ==================================================================
  * Cards — every .cbi-section becomes a shadcn Card
+ *
+ * --pad is local to the card, so a nested card bleeds by its own
+ * padding without a second set of selectors.
  * ================================================================ */
 .cbi-section {
+	--pad: var(--card-pad);
+
 	position: relative;
 	background: var(--card);
 	border: 1px solid var(--border);
-	border-radius: var(--radius-xl);
-	box-shadow: var(--shadow-xs);
-	padding: 1.25rem;
+	border-radius: var(--card-radius);
+	box-shadow: 0 1px 2px 0 oklch(0 0 0 / 0.04);
+	padding: var(--pad);
 	margin: 0;
 }
 
 .cbi-section > h3 {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	margin: -1.25rem -1.25rem 1rem;
-	padding: 0.875rem 1.25rem;
+	gap: var(--space-3);
+	margin: calc(var(--pad) * -1) calc(var(--pad) * -1) var(--space-7);
+	padding: var(--card-header-pad-y) var(--pad);
 	border-bottom: 1px solid var(--border);
-	font-size: 0.875rem;
+	font-size: var(--text-base);
 	font-weight: 600;
-	letter-spacing: -0.01em;
-	line-height: 1.4;
-	border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+	letter-spacing: -0.008em;
+	line-height: var(--leading-snug);
+	border-radius: var(--card-radius) var(--card-radius) 0 0;
 	background: transparent;
 }
 
 .cbi-section > h3 small {
 	font-weight: 400;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 	color: var(--muted-foreground);
 }
 
 .cbi-section > h3 + .cbi-section-descr {
-	margin-top: -0.5rem;
+	margin-top: calc(var(--space-3) * -1);
 }
 
 .cbi-section-descr {
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	line-height: 1.55;
 	color: var(--muted-foreground);
-	margin: 0 0 1rem;
+	margin: 0 0 var(--space-7);
 }
 
 .cbi-section-descr a {
@@ -85,38 +102,39 @@
 
 .cbi-section-node {
 	display: block;
+	min-width: 0;
 }
 
-/* nested sections keep a lighter surface */
+/* nested sections keep a lighter surface and a lighter rhythm */
 .cbi-section .cbi-section {
+	--pad: var(--card-pad-nested);
+
 	background: color-mix(in oklab, var(--muted) 45%, var(--card));
 	box-shadow: none;
-	padding: 1rem;
+	padding: var(--pad);
 }
 
 .cbi-section .cbi-section > h3 {
-	margin: -1rem -1rem 0.875rem;
-	padding: 0.75rem 1rem;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 }
 
 .cbi-section > .cbi-section {
-	margin-top: 0.75rem;
+	margin-top: var(--space-5);
 }
 
 .cbi-section-remove {
 	float: none;
 	position: absolute;
-	top: 0.75rem;
-	right: 0.875rem;
+	top: var(--space-5);
+	right: var(--space-6);
 	margin: 0;
 	z-index: 2;
 }
 
 .cbi-section-remove > .cbi-button {
-	height: 1.75rem;
-	padding: 0 0.5rem;
-	font-size: 0.75rem;
+	height: var(--control-h-sm);
+	padding: 0 var(--space-3);
+	font-size: var(--text-xs);
 	border-color: transparent;
 	background: transparent;
 	color: var(--muted-foreground);
@@ -133,9 +151,9 @@
 .cbi-section-create {
 	display: flex;
 	align-items: center;
-	gap: 0.5rem;
-	margin: 0.875rem 0 0;
-	padding: 0.75rem 0 0;
+	gap: var(--space-3);
+	margin: var(--space-6) 0 0;
+	padding: var(--space-5) 0 0;
 	border-top: 1px dashed var(--border);
 }
 
@@ -155,74 +173,121 @@
 }
 
 /* ==================================================================
- * Form rows
+ * Form rows — label | field, description under the field
  * ================================================================ */
 .cbi-value {
 	display: grid;
-	grid-template-columns: minmax(0, 12rem) minmax(0, 1fr);
+	grid-template-columns: var(--field-cols);
+	column-gap: var(--field-gap);
+	row-gap: var(--space-2);
 	align-items: start;
-	gap: 0.25rem 1.25rem;
 	margin: 0;
-	padding: 0.875rem 0;
-	border-bottom: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+	padding: var(--row-pad-y) 0;
+	border-bottom: 1px solid color-mix(in oklab, var(--border) 55%, transparent);
 	flex-wrap: nowrap;
 }
 
 .cbi-value:last-child,
 .cbi-value-last {
 	border-bottom: 0;
-	padding-bottom: 0.25rem;
+	padding-bottom: var(--space-1);
 }
 
 .cbi-value:first-child {
-	padding-top: 0.25rem;
+	padding-top: var(--space-1);
 }
 
 .cbi-value label.cbi-value-title,
 .cbi-value > .cbi-value-title {
+	grid-column: var(--field-label-col);
 	flex: none;
-	padding-top: 0.4375rem;
+	padding-top: var(--field-title-pad);
 	text-align: left;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 500;
-	line-height: 1.4;
+	line-height: var(--leading-snug);
+	letter-spacing: -0.005em;
 	color: var(--foreground);
 	width: auto;
+	min-width: 0;
 }
 
 .cbi-value-title small {
 	display: block;
 	margin-top: 0.125rem;
 	font-weight: 400;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
+	line-height: var(--leading-normal);
 	color: var(--muted-foreground);
 }
 
 .cbi-value-field {
+	grid-column: var(--field-field-col);
 	margin-left: 0;
 	min-width: 0;
 	flex: none;
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
-	gap: 0.5rem;
+	gap: var(--space-3);
 }
 
-.cbi-value-field > .cbi-input-text,
-.cbi-value-field > .cbi-input-password {
-	flex: 0 1 auto;
+/* inline controls share one row and grow up to the form column width */
+.cbi-value-field > input:not([type="checkbox"]):not([type="radio"]):not([type="number"]):not([type="file"]),
+.cbi-value-field > select,
+.cbi-value-field > .cbi-select,
+.cbi-value-field > .cbi-dropdown:not(.btn):not(.cbi-button) {
+	flex: 1 1 var(--control-min-w);
+	width: auto;
+	max-width: var(--control-max-w);
 }
 
-.cbi-value-field > *:only-child {
+.cbi-value-field > input[type="number"] {
+	flex: 0 0 var(--control-number-w);
+	width: var(--control-number-w);
+	max-width: var(--control-number-w);
+}
+
+.cbi-value-field > textarea {
+	flex: 1 1 100%;
+	width: 100%;
+	max-width: 40rem;
+}
+
+.cbi-value-field > .cbi-dynlist {
+	flex: 1 1 100%;
+	max-width: var(--control-max-w);
+}
+
+.cbi-value-field > .cbi-button,
+.cbi-value-field > form,
+.cbi-value-field > form > .cbi-button {
+	flex: 0 0 auto;
+}
+
+.cbi-value-field > * {
 	margin-right: 0;
 }
 
 .cbi-value-description {
-	flex-basis: 100%;
-	font-size: 0.75rem;
-	line-height: 1.5;
+	font-size: var(--text-xs);
+	line-height: 1.55;
+	letter-spacing: 0;
 	color: var(--muted-foreground);
-	margin: 0.3125rem 0 0;
+	margin: 0;
+	min-width: 0;
+	max-width: 60rem;
+}
+
+/* description authored as a sibling of the field (LuCI's default) */
+.cbi-value > .cbi-value-description {
+	grid-column: var(--field-desc-col) / -1;
+}
+
+/* description authored inside the field: own line, full field width */
+.cbi-value-field > .cbi-value-description {
+	flex: 1 1 100%;
+	margin: 0;
 }
 
 .cbi-value-description:not(:empty)::before {
@@ -236,26 +301,36 @@
 }
 
 .cbi-value > .cbi-section {
-	margin-top: 0.25rem;
+	margin-top: var(--space-1);
 }
 
-/* checkbox rows sit closer together */
+/* checkbox / radio rows */
 .cbi-value-field > .cbi-checkbox,
 .cbi-value-field > div > .cbi-radio {
 	height: auto;
-	min-height: 2.25rem;
+	min-height: var(--control-h);
 	display: inline-flex;
 	align-items: center;
-	gap: 0.5rem;
-	font-size: 0.8125rem;
+	gap: var(--space-3);
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
+}
+
+.cbi-value-field:has(> div > .cbi-radio) > div {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-3) var(--space-6);
 }
 
 .cbi-radio {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.375rem;
+	gap: var(--space-2);
 	cursor: pointer;
-	margin-right: 1rem;
+	margin-right: 0;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
 }
 
 .cbi-value-error input,
@@ -276,25 +351,26 @@
 	background: color-mix(in oklab, var(--destructive) 7%, var(--card));
 	border: 1px solid color-mix(in oklab, var(--destructive) 28%, var(--border));
 	border-radius: var(--radius-md);
-	padding: 0.625rem 0.875rem;
-	margin: 0.75rem 0;
+	padding: var(--space-4) var(--space-6);
+	margin: var(--space-5) 0;
 	color: var(--destructive);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
 }
 
 .cbi-section-error ul {
-	margin: 0.25rem 0 0 1rem;
+	margin: var(--space-1) 0 0 var(--space-7);
 }
 
 /* ==================================================================
- * Tables
+ * Tables — one rhythm for every list view
  * ================================================================ */
 .table {
 	display: table;
 	width: 100%;
 	margin: 0;
 	padding: 0;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	border-collapse: separate;
 	border-spacing: 0;
 	position: relative;
@@ -309,23 +385,26 @@
 .table .td {
 	display: table-cell;
 	vertical-align: middle;
-	padding: 0.625rem 0.75rem;
-	line-height: 1.45;
+	padding: var(--cell-pad-y) var(--cell-pad-x);
+	line-height: var(--cell-leading);
 	text-align: left;
 	border-top: 0;
 	border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
+	overflow-wrap: break-word;
+	hyphens: none;
+	text-wrap: pretty;
 }
 
 .table .th {
-	background: color-mix(in oklab, var(--muted) 70%, var(--card));
+	background: color-mix(in oklab, var(--muted) 60%, var(--card));
 	color: var(--muted-foreground);
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 	font-weight: 500;
-	letter-spacing: 0.01em;
+	letter-spacing: 0;
 	white-space: nowrap;
 	border-bottom: 1px solid var(--border);
-	padding-top: 0.5rem;
-	padding-bottom: 0.5rem;
+	padding-top: var(--space-3);
+	padding-bottom: var(--space-3);
 	vertical-align: middle;
 }
 
@@ -342,75 +421,82 @@
 }
 
 .table .tr:hover .td {
-	background: color-mix(in oklab, var(--muted) 55%, transparent);
+	background: color-mix(in oklab, var(--muted) 45%, transparent);
 }
 
 .table .tr.cbi-section-table-titles:hover .td,
 .table .tr.cbi-section-table-titles:hover .th {
-	background: color-mix(in oklab, var(--muted) 70%, var(--card));
+	background: color-mix(in oklab, var(--muted) 60%, var(--card));
 }
 
-/* bleed tables to the card edges */
+/* bleed tables to the card edges — derived from the card's own padding */
 .cbi-section > .cbi-section-node > .table,
 .cbi-section > .table,
 .cbi-section-node > .cbi-tblsection > .table {
-	width: calc(100% + 2.5rem);
-	margin: 0 -1.25rem;
+	width: calc(100% + (var(--pad) * 2));
+	margin: 0 calc(var(--pad) * -1);
 }
 
 .cbi-section > .cbi-section-node > .table .th:first-child,
 .cbi-section > .cbi-section-node > .table .td:first-child,
 .cbi-section > .table .th:first-child,
 .cbi-section > .table .td:first-child {
-	padding-left: 1.25rem;
+	padding-left: var(--pad);
 }
 
 .cbi-section > .cbi-section-node > .table .th:last-child,
 .cbi-section > .cbi-section-node > .table .td:last-child,
 .cbi-section > .table .th:last-child,
 .cbi-section > .table .td:last-child {
-	padding-right: 1.25rem;
+	padding-right: var(--pad);
 }
 
+/* row actions never collapse — the cell keeps at least its content width */
 .table .td.cbi-section-actions,
 .table .th.cbi-section-actions {
 	text-align: right;
 	white-space: nowrap;
 	width: 1%;
+	min-width: max-content;
+	padding-left: var(--space-4);
 }
 
-.td.cbi-section-actions > *,
-.td.cbi-section-actions > * > form {
+.table .td.cbi-section-actions > *,
+.table .td.cbi-section-actions > * > form {
 	display: inline-flex;
 	margin: 0;
-	gap: 0.25rem;
+	gap: var(--space-1);
+	vertical-align: middle;
 }
 
-.tr.cbi-section-table-descr .th,
-.cbi-section-table-descr .th {
+.table .tr.cbi-section-table-descr .th,
+.table .cbi-section-table-descr .th {
 	font-weight: 400;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
+	line-height: var(--leading-normal);
 	color: var(--muted-foreground);
 	background: transparent;
 	border-bottom: 1px solid color-mix(in oklab, var(--border) 70%, transparent);
 	white-space: normal;
+	vertical-align: top;
 }
 
-.tr.placeholder {
+.table .tr.placeholder {
 	height: 5rem;
 }
 
-.tr.placeholder > .td {
+.table .tr.placeholder > .td {
 	position: static;
 	text-align: center;
 	color: var(--muted-foreground);
 	line-height: 5rem;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 }
 
 .cbi-value-field table td {
-	padding: 0.25rem 0.5rem 0.25rem 0;
+	padding: var(--space-1) var(--space-3) var(--space-1) 0;
 	border: 0;
+	font-size: var(--text-sm);
 }
 
 .table.valign-middle .td {
@@ -424,6 +510,55 @@
 	min-width: 6rem;
 }
 
+/* ------------------------------------------------------------------
+ * Phones — a wide table scrolls instead of compressing
+ *
+ * Read-only tables keep their words intact (CJK must not break inside a
+ * term) and size to their content inside a scroll container. Tables with
+ * form controls are excluded: they must stay fluid so an open dropdown
+ * is not clipped by the scroll container.
+ * ---------------------------------------------------------------- */
+@media screen and (max-width: 767px) {
+	/* align tables with the card padding: a bleeding table cannot scroll
+	   cleanly inside the card */
+	.cbi-section > .cbi-section-node > .table,
+	.cbi-section > .table,
+	.cbi-section-node > .cbi-tblsection > .table {
+		width: 100%;
+		margin-inline: 0;
+	}
+
+	.cbi-section > .cbi-section-node > .table .th:first-child,
+	.cbi-section > .cbi-section-node > .table .td:first-child,
+	.cbi-section > .table .th:first-child,
+	.cbi-section > .table .td:first-child {
+		padding-left: var(--cell-pad-x);
+	}
+
+	.cbi-section > .cbi-section-node > .table .th:last-child,
+	.cbi-section > .cbi-section-node > .table .td:last-child,
+	.cbi-section > .table .th:last-child,
+	.cbi-section > .table .td:last-child {
+		padding-right: var(--cell-pad-x);
+	}
+
+	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) {
+		overflow-x: auto;
+		overscroll-behavior-x: contain;
+	}
+
+	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) > .table {
+		width: max-content;
+		min-width: 100%;
+	}
+
+	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) .td,
+	.cbi-section-node:has(> .table):not(:has(.cbi-dropdown, .cbi-select, input, select, textarea)) .th {
+		word-break: keep-all;
+		overflow-wrap: normal;
+	}
+}
+
 /* ==================================================================
  * Tabs
  * ================================================================ */
@@ -433,8 +568,8 @@
 	flex-wrap: wrap;
 	align-items: center;
 	gap: 0.125rem;
-	margin: 0 0 1rem;
-	padding: 0.25rem;
+	margin: 0 0 var(--space-7);
+	padding: 0.1875rem;
 	list-style: none;
 	background: var(--muted);
 	background-image: none;
@@ -448,7 +583,7 @@
 	flex: 0 0 auto;
 	display: flex;
 	align-items: center;
-	height: 1.875rem;
+	height: var(--control-h-sm);
 	max-width: none;
 	margin: 0;
 	background: transparent;
@@ -463,21 +598,22 @@
 	display: inline-flex;
 	align-items: center;
 	height: 100%;
-	padding: 0 0.75rem;
+	padding: 0 var(--control-px);
 	border-radius: inherit;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 500;
 	line-height: 1;
 	color: inherit;
 	text-decoration: none;
 	outline: none;
+	white-space: nowrap;
 }
 
 .tabs > li.active,
 .cbi-tabmenu > li.cbi-tab {
 	background: var(--background);
 	color: var(--foreground);
-	box-shadow: var(--shadow-2xs);
+	box-shadow: 0 1px 2px oklch(0 0 0 / 0.06), 0 0 0 1px color-mix(in oklab, var(--border) 80%, transparent);
 }
 
 .tabs > li:not(.active):hover,
@@ -502,33 +638,34 @@
 
 .cbi-tab-disabled[data-errors]::after {
 	content: attr(data-errors);
-	margin-left: 0.375rem;
+	margin-left: var(--space-2);
 	min-width: 1.125rem;
 	height: 1.125rem;
-	padding: 0 0.25rem;
+	padding: 0 var(--space-1);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	background: var(--destructive);
 	color: var(--destructive-foreground);
 	border-radius: 999px;
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
 	font-weight: 600;
 }
 
 .cbi-tab-descr {
-	margin: -0.5rem 0 1rem;
-	font-size: 0.8125rem;
+	margin: calc(var(--space-3) * -1) 0 var(--space-7);
+	font-size: var(--text-sm);
+	line-height: 1.55;
 	color: var(--muted-foreground);
 }
 
 .cbi-tabmenu.map {
-	margin: 0 0 1rem;
+	margin: 0 0 var(--space-7);
 }
 
 .cbi-tabmenu.map > li {
 	height: 2.125rem;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	font-weight: 500;
 }
 
@@ -542,7 +679,7 @@
 
 /* tabmenu host rendered by the theme menu script */
 .tabmenu-host {
-	margin-bottom: 1rem;
+	margin-bottom: var(--space-7);
 }
 
 .tabmenu-host:empty {
@@ -555,29 +692,30 @@
 .alert-message {
 	position: relative;
 	display: block;
-	padding: 0.875rem 1rem;
-	margin: 0 0 1rem;
+	padding: var(--space-6) var(--space-7);
+	margin: 0 0 var(--space-7);
 	background: var(--card);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-lg);
 	color: var(--foreground);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	line-height: 1.55;
 	background-image: none;
 	box-shadow: var(--shadow-2xs);
 }
 
 .alert-message h4 {
-	font-size: 0.875rem;
+	font-size: var(--text-base);
 	font-weight: 600;
-	margin: 0 0 0.25rem;
+	margin: 0 0 var(--space-1);
 	color: inherit;
-	line-height: 1.4;
+	line-height: var(--leading-snug);
 }
 
 .alert-message p {
-	font-size: 0.8125rem;
-	margin: 0 0 0.5rem;
+	font-size: var(--text-sm);
+	line-height: 1.55;
+	margin: 0 0 var(--space-3);
 	color: color-mix(in oklab, currentColor 82%, transparent);
 }
 
@@ -587,7 +725,7 @@
 
 .alert-message .right {
 	float: none;
-	margin-top: 0.75rem;
+	margin-top: var(--space-5);
 }
 
 .alert-message.warning {
@@ -631,17 +769,17 @@
 .btn.label {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.25rem;
+	gap: var(--space-1);
 	height: 1.375rem;
 	padding: 0 0.4375rem;
 	border: 1px solid var(--border);
-	border-radius: var(--radius-sm);
+	border-radius: 0.375rem;
 	background: var(--secondary);
 	color: var(--secondary-foreground);
-	font-size: 0.6875rem;
+	font-size: var(--text-2xs);
 	font-weight: 500;
 	line-height: 1;
-	letter-spacing: 0.01em;
+	letter-spacing: 0;
 	text-decoration: none;
 	box-shadow: none;
 	vertical-align: middle;
@@ -670,36 +808,61 @@ a.label:hover {
 	text-decoration: none;
 }
 
+.cbi-section > h3 .label {
+	font-size: var(--text-2xs);
+	height: 1.5rem;
+	padding: 0 0.5625rem;
+}
+
+/* header indicators — quiet ghost chips */
+.header-indicators,
+#indicators {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
 .header-indicators .label,
 #indicators .label,
 #indicators > span {
 	display: inline-flex;
 	align-items: center;
-	height: 1.75rem;
-	padding: 0 0.5625rem;
+	gap: var(--space-2);
+	height: var(--control-h-sm);
+	padding: 0 var(--space-4);
+	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
-	font-size: 0.75rem;
+	background: transparent;
+	color: var(--muted-foreground);
+	font-size: var(--text-xs);
 	font-weight: 500;
 	line-height: 1;
-	border: 1px solid var(--border);
-	background: var(--muted);
-	color: var(--muted-foreground);
+	letter-spacing: 0;
 	text-decoration: none;
+	box-shadow: none;
 }
 
-#indicators > span[data-clickable] {
+#indicators > span[data-style="active"] {
+	background: var(--muted);
+	border-color: transparent;
+	color: var(--foreground);
+}
+
+#indicators .label.important {
+	background: var(--primary);
+	border-color: var(--primary);
+	color: var(--primary-foreground);
+}
+
+#indicators > span[data-clickable],
+#indicators .label[data-clickable] {
 	cursor: pointer;
 }
 
 #indicators > span[data-clickable]:hover {
 	background: var(--accent);
-	color: var(--accent-foreground);
-}
-
-#indicators > span[data-style="active"] {
-	background: color-mix(in oklab, var(--warning) 16%, var(--card));
-	border-color: color-mix(in oklab, var(--warning) 40%, var(--border));
-	color: color-mix(in oklab, var(--warning) 70%, var(--foreground));
+	border-color: var(--border);
+	color: var(--foreground);
 }
 
 #indicators:empty {
@@ -713,7 +876,7 @@ a.label:hover {
 	background: oklch(0 0 0 / 0.45);
 	backdrop-filter: blur(3px);
 	-webkit-backdrop-filter: blur(3px);
-	padding: 0 1rem;
+	padding: 0 var(--space-7);
 	border: 0;
 }
 
@@ -721,8 +884,8 @@ a.label:hover {
 	position: relative;
 	width: min(36rem, 100%);
 	max-width: 36rem;
-	margin: 8vh auto 4rem;
-	padding: 1.25rem;
+	margin: 8vh auto var(--space-10);
+	padding: 1.375rem;
 	background: var(--card);
 	color: var(--card-foreground);
 	border: 1px solid var(--border);
@@ -737,30 +900,30 @@ a.label:hover {
 }
 
 .modal > h4 {
-	font-size: 1rem;
+	font-size: var(--text-md);
 	font-weight: 600;
 	letter-spacing: -0.015em;
-	margin: 0 0 0.75rem;
-	line-height: 1.4;
+	margin: 0 0 var(--space-4);
+	line-height: var(--leading-snug);
 }
 
 .modal > * {
 	line-height: 1.55;
-	margin-bottom: 0.75rem;
+	margin-bottom: var(--space-5);
 	max-width: 100%;
 }
 
 .modal > p {
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	color: var(--muted-foreground);
 }
 
 .modal > .button-row {
 	display: flex;
 	justify-content: flex-end;
-	gap: 0.5rem;
-	margin: 1rem 0 0;
-	padding: 0;
+	gap: var(--space-3);
+	margin: var(--space-7) 0 0;
+	padding: var(--space-1) 0 0;
 }
 
 .modal > .button-row > button,
@@ -772,8 +935,8 @@ a.label:hover {
 	float: none;
 	display: flex;
 	justify-content: flex-end;
-	gap: 0.5rem;
-	margin: 0.75rem 0 0;
+	gap: var(--space-3);
+	margin: var(--space-5) 0 0;
 }
 
 #modal_overlay > .modal.login {
@@ -802,42 +965,89 @@ a.label:hover {
 
 /* ==================================================================
  * Dropdown (shadcn Select)
+ *
+ * Box metrics (height, border, radius, fill) come from the control
+ * layer; this block only tunes the multi-select / preview layout.
  * ================================================================ */
 .cbi-dropdown:not(.btn):not(.cbi-button) {
-	background: var(--background);
-	border: 1px solid var(--input);
-	border-radius: var(--radius-md);
-	color: var(--foreground);
-	box-shadow: var(--shadow-2xs);
-	min-height: 2.25rem;
 	padding: 0 !important;
 	align-items: center;
+	/* multi-value dropdowns wrap their tags, so the height must be a
+	   minimum rather than a fixed control height */
+	height: auto;
+	min-height: var(--control-h);
 }
 
 .cbi-dropdown:not(.btn):not(.cbi-button) > ul > li {
-	padding: 0.25rem 0.6875rem;
+	padding: var(--space-1) var(--control-px);
 	color: inherit;
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	min-width: 0;
+	line-height: var(--leading-snug);
 }
 
 .cbi-dropdown > .open,
 .cbi-dropdown > .more {
 	color: var(--muted-foreground);
-	padding: 0 0.5rem;
+	padding: 0 var(--space-3);
 	line-height: 1;
-	font-size: 0.75rem;
+	font-size: var(--text-xs);
 }
 
 .cbi-dropdown > .open::before {
 	content: "⌄";
-	font-size: 0.875rem;
+	font-size: var(--text-base);
 	line-height: 1;
 }
 
 .cbi-dropdown.btn,
 .cbi-dropdown.cbi-button {
 	gap: 0.125rem;
+	height: var(--control-h);
+	min-height: var(--control-h);
+	align-items: center;
+	padding: 0 var(--space-1) 0 0 !important;
+	background: var(--primary);
+	border: 1px solid var(--primary);
+	color: var(--primary-foreground);
+	border-radius: var(--control-radius);
+	box-shadow: var(--shadow-2xs);
+}
+
+.cbi-dropdown.btn > ul,
+.cbi-dropdown.cbi-button > ul {
+	align-items: center;
+	height: 100%;
+}
+
+.cbi-dropdown.btn > ul > li,
+.cbi-dropdown.cbi-button > ul > li {
+	padding: 0 var(--space-5);
+	color: inherit;
+	font-size: var(--text-sm);
+	font-weight: 500;
+	line-height: 1;
+	min-height: 0;
+}
+
+.cbi-dropdown.btn > .open,
+.cbi-dropdown.cbi-button > .open {
+	border-left: 1px solid color-mix(in oklab, var(--primary-foreground) 25%, transparent);
+	margin-left: 0;
+	padding: 0 var(--space-3);
+	height: 100%;
+	color: inherit;
+}
+
+.cbi-dropdown.btn:hover,
+.cbi-dropdown.cbi-button:hover {
+	background: color-mix(in oklab, var(--primary) 88%, var(--background));
+	border-color: color-mix(in oklab, var(--primary) 88%, var(--background));
+}
+
+.cbi-dropdown.btn > ul.preview,
+.cbi-dropdown.cbi-button > ul.preview {
+	display: none;
 }
 
 .cbi-dropdown[open] {
@@ -847,13 +1057,13 @@ a.label:hover {
 }
 
 .cbi-dropdown[open] > ul.dropdown {
-	top: calc(100% + 0.25rem);
+	top: calc(100% + var(--space-1));
 	background: var(--popover);
 	color: var(--popover-foreground);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
 	box-shadow: var(--shadow-md);
-	padding: 0.25rem;
+	padding: var(--space-1);
 	min-width: 100%;
 	max-width: 24rem;
 	z-index: 1100;
@@ -862,11 +1072,12 @@ a.label:hover {
 .cbi-dropdown[open] > ul.dropdown > li {
 	display: flex !important;
 	align-items: center;
-	min-height: 1.875rem;
-	padding: 0.375rem 0.5rem;
+	min-height: var(--control-h-sm);
+	padding: var(--space-2) var(--space-3);
 	border: 0;
 	border-radius: var(--radius-sm);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
+	line-height: var(--leading-snug);
 	color: inherit;
 	cursor: pointer;
 }
@@ -900,7 +1111,7 @@ a.label:hover {
 }
 
 .cbi-dropdown > ul > li > form > input[type="checkbox"] {
-	margin-right: 0.5rem;
+	margin-right: var(--space-3);
 }
 
 /* ==================================================================
@@ -912,9 +1123,9 @@ a.label:hover {
 	border: 0;
 	border-radius: var(--radius-sm);
 	box-shadow: var(--shadow-md);
-	padding: 0.3125rem 0.5rem;
-	font-size: 0.75rem;
-	line-height: 1.4;
+	padding: 0.3125rem var(--space-3);
+	font-size: var(--text-xs);
+	line-height: var(--leading-snug);
 	white-space: pre-line;
 	max-width: 22rem;
 	z-index: 1200;
@@ -961,34 +1172,35 @@ a.label:hover {
  * ================================================================ */
 .cbi-progressbar {
 	position: relative;
-	height: 0.5rem;
+	height: 0.375rem;
 	min-width: 8rem;
-	margin: 1.5rem 0 0.5rem;
+	margin: var(--space-9) 0 var(--space-3);
 	background: var(--muted);
 	border: 0;
 	border-radius: 999px;
-	box-shadow: inset 0 1px 1px oklch(0 0 0 / 0.06);
+	box-shadow: none;
 }
 
 .cbi-progressbar > div {
 	height: 100%;
-	background: var(--primary);
+	background: var(--foreground);
 	border-radius: 999px;
 	transition: width 240ms ease;
 }
 
 .cbi-progressbar::before {
-	top: -1.35rem;
-	font-size: 0.75rem;
-	color: var(--muted-foreground);
+	top: -1.25rem;
+	font-size: var(--text-2xs);
 	font-weight: 500;
+	letter-spacing: 0.01em;
+	color: var(--muted-foreground);
 }
 
 /* ==================================================================
  * Spinner
  * ================================================================ */
 #view > div.spinning:first-child {
-	margin: 3rem auto;
+	margin: var(--space-12) auto;
 	text-align: center;
 }
 
@@ -996,13 +1208,13 @@ a.label:hover {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 0.5rem;
+	gap: var(--space-3);
 	color: var(--muted-foreground);
-	font-size: 0.8125rem;
+	font-size: var(--text-sm);
 	position: relative;
-	padding-left: 1.25rem;
+	padding-left: var(--space-8);
 	height: auto;
-	min-height: 1.5rem;
+	min-height: var(--space-9);
 	background: none;
 }
 
@@ -1011,9 +1223,9 @@ a.label:hover {
 	position: absolute;
 	left: 0;
 	top: 50%;
-	width: 0.875rem;
-	height: 0.875rem;
-	margin-top: -0.4375rem;
+	width: var(--space-6);
+	height: var(--space-6);
+	margin-top: calc(var(--space-6) / -2);
 	border: 2px solid color-mix(in oklab, var(--foreground) 20%, transparent);
 	border-top-color: var(--foreground);
 	border-radius: 50%;
